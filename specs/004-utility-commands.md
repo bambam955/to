@@ -69,18 +69,16 @@ This spec defines the utility and management commands for the "to" tool: listing
 **Purpose**: Show the full directory path for a given alias
 
 **Output Requirements**:
-
 - Display just the absolute path (no prefix or formatting)
 - Return exit code 0 for valid aliases, 1 for invalid
 - No additional formatting or explanatory text
 
 **Use Cases**:
-
 - Script integration where just the path is needed
 - Checking where an alias points before navigation
 - Automated tools that need to resolve alias paths
 
-**Success Scenario**: Output the absolute path to stdout
+**Success Scenario**: Output to absolute path to stdout
 **Error Scenarios**: Alias doesn't exist, database access errors
 
 ## Output Formatting Standards
@@ -91,13 +89,12 @@ This spec defines the utility and management commands for the "to" tool: listing
 **Consistency**: Use similar formatting across display commands
 **Clarity**: Distinguish between different types of information
 
-### List Command Formatting
+### Error Messages
 
-**Column Alignment**: Align alias names and paths in columns
-**Path Display**: Show full paths, handle long paths gracefully
-**Visual Separation**: Use spacing or lines to separate entries for readability
-
-**Error Display**: Show database errors clearly without mixing with alias listings
+**Error Prefix**: All error messages use "error:" prefix
+**Validation Errors**: Clear guidance on how to fix issues
+**Database Errors**: Clear database-related issues
+**System Errors**: File system and permission issues
 
 ### Clean Command Reporting
 
@@ -198,13 +195,11 @@ This spec defines the utility and management commands for the "to" tool: listing
 ### Output Standards
 
 - [ ] Define consistent formatting principles across commands
-- [ ] Design error message standards
-- [ ] Specify color and formatting usage guidelines
-- [ ] Create display standards for different terminal types
+- [ ] Design error message standards using "error:" prefix
+- [ ] Specify clean formatting guidelines
 
 ### User Experience
 
-- [ ] Design command help and usage patterns
-- [ ] Define progress feedback for long operations
+- [ ] Define clear success and error feedback
 - [ ] Specify error recovery guidance
 - [ ] Design consistent interaction patterns

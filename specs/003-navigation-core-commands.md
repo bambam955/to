@@ -43,11 +43,15 @@ This spec defines the primary user-facing commands for the "to" tool: default na
 **Purpose**: Register a new alias pointing to a directory
 
 **Validation Requirements**:
-
 - Alias name: must follow pattern (starts alphanumeric, contains alphanumeric/hyphens/underscores)
 - Directory: must exist and be accessible
 - Uniqueness: alias name must not already exist in database
 - Path handling: resolve relative paths to absolute paths
+
+**Success Scenario**: New alias created and saved to database
+**Error Scenarios**: Invalid alias format, alias already exists, directory doesn't exist, permission errors
+
+**Duplicate Directory Handling**: If other aliases point to same directory, show warning but allow registration
 
 **Success Scenario**: New alias created and saved to database
 **Error Scenarios**: Invalid alias format, alias already exists, directory doesn't exist, permission errors
@@ -77,6 +81,7 @@ This spec defines the primary user-facing commands for the "to" tool: default na
 
 ### Error Messages
 
+**Error Prefix**: All error messages use "error:" prefix
 **Validation Errors**: Clear guidance on how to fix the issue
 **Database Errors**: Distinguish between permission issues, corruption, and other problems
 **Operation Errors**: Specify what went wrong and suggest fixes
@@ -84,7 +89,6 @@ This spec defines the primary user-facing commands for the "to" tool: default na
 ### Warnings
 
 **Duplicate Directory**: Inform user of existing aliases pointing to same directory
-**Non-existent Directory**: When navigation target directory has been removed
 
 ## Go Package Strategy
 
@@ -93,22 +97,20 @@ This spec defines the primary user-facing commands for the "to" tool: default na
 **Package Choice**: Cobra for CLI command structure and argument parsing
 
 **Rationale**:
-
 - Industry standard for Go CLI applications
 - Built-in support for subcommands and validation
-- Automatic help generation
+- Automatic help generation via --help flag
 - Good integration with other Go ecosystem tools
 
 ### Command Structure
 
 **Root Command**: `to`
-
 - Default subcommand handles navigation
 - Subcommands: `reg`, `unreg`, `list`, `clean`, `exp`
 - Flags and arguments handled automatically by Cobra
 
-**Error Handling**: Cobra's built-in error handling combined with custom error messages
-**Help System**: Automatic generation of usage information
+**Error Handling**: Cobra's built-in error handling combined with custom "error:" prefixed messages
+**Help System**: Cobra's automatic help generation via --help flag
 
 ## Design Decisions
 

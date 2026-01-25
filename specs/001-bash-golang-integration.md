@@ -34,7 +34,7 @@ This spec defines the integration architecture between the bash wrapper function
 - `0`: Success (only for non-navigation commands)
 - `1`: Any error condition
 
-**Error Messages**: Clear, human-readable messages to stderr that the bash wrapper simply forwards to the user without modification.
+**Error Messages**: Clear, human-readable messages prefixed with "error:" that the bash wrapper simply forwards to the user without modification.
 
 ## Installation Architecture
 
@@ -62,22 +62,7 @@ This spec defines the integration architecture between the bash wrapper function
 **Exit Code Preservation**: Bash wrapper returns the same exit code as Go backend
 **Error Forwarding**: stderr messages pass through unchanged without modification
 
-## Shell Completion Integration
 
-### Completion Strategy
-
-**Go Backend**: Provides completion data in structured format
-**Bash/Zsh**: Parse completion data and provide shell-specific completion
-
-### Completion Data Format
-
-**Aliases List**: `to-backend --complete-aliases` outputs one alias per line
-**Commands List**: `to-backend --complete-commands` outputs command names
-
-### Shell Integration Points
-
-**Bash**: Use bash completion system to call backend and provide suggestions
-**Zsh**: Use zsh completion system with backend data source
 
 ## Process Lifecycle
 
@@ -153,13 +138,7 @@ This spec defines the integration architecture between the bash wrapper function
 - [ ] Create bash wrapper error forwarding logic
 - [ ] Implement exit code preservation
 
-### Shell Completion
 
-- [ ] Design completion data format for Go backend
-- [ ] Implement `--complete-aliases` command
-- [ ] Implement `--complete-commands` command
-- [ ] Create bash completion integration
-- [ ] Create zsh completion integration
 
 ### Process Management
 
