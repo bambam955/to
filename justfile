@@ -30,7 +30,7 @@ dev: clean fmt lint test build
 
 # Run tests
 test:
-    go test -v ./...
+    go test ./...
 
 # Clean build artifacts
 clean:
