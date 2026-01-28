@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/bambam955/to/pkg/errors"
+	"to/pkg/errors"
 )
 
 const (

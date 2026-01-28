@@ -1,4 +1,4 @@
-module github.com/bambam955/to
+module to
 
 go 1.25.6
 
