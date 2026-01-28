@@ -62,8 +62,6 @@ This spec defines the integration architecture between the bash wrapper function
 **Exit Code Preservation**: Bash wrapper returns the same exit code as Go backend
 **Error Forwarding**: stderr messages pass through unchanged without modification
 
-
-
 ## Process Lifecycle
 
 ### Startup Behavior
@@ -137,8 +135,6 @@ This spec defines the integration architecture between the bash wrapper function
 - [ ] Design stderr message formatting standards
 - [ ] Create bash wrapper error forwarding logic
 - [ ] Implement exit code preservation
-
-
 
 ### Process Management
 

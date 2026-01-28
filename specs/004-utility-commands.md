@@ -69,11 +69,13 @@ This spec defines the utility and management commands for the "to" tool: listing
 **Purpose**: Show the full directory path for a given alias
 
 **Output Requirements**:
+
 - Display just the absolute path (no prefix or formatting)
 - Return exit code 0 for valid aliases, 1 for invalid
 - No additional formatting or explanatory text
 
 **Use Cases**:
+
 - Script integration where just the path is needed
 - Checking where an alias points before navigation
 - Automated tools that need to resolve alias paths
