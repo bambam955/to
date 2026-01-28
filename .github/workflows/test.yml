@@ -1,0 +1,25 @@
+name: Test
+
+on:
+  push:
+    branches: [main, 001-feat-bash-golang-integration]
+  pull_request:
+    branches: [main, 001-feat-bash-golang-integration]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Run tests
+        run: go test -v -race -coverprofile=coverage.out ./...
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage.out

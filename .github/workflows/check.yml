@@ -1,0 +1,29 @@
+name: Check
+
+on:
+  push:
+    branches: [main, 001-feat-bash-golang-integration]
+  pull_request:
+    branches: [main, 001-feat-bash-golang-integration]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25'
+
+      - name: Run go fmt
+        run: go fmt ./... && git diff --exit-code
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Run shellcheck
+        run: shellcheck --enable=all --shell=bash shell/*
