@@ -10,6 +10,7 @@ source ~/.local/bin/to.sh
 ## Commands
 
 ### Navigate to an alias
+
 ```bash
 to <alias>
 ```
@@ -17,6 +18,7 @@ to <alias>
 Changes directory to the registered alias. Outputs `[to] <path>` to stdout on success.
 
 ### Register an alias
+
 ```bash
 to reg <alias> <directory>
 ```
@@ -24,6 +26,7 @@ to reg <alias> <directory>
 Register a new alias pointing to a directory.
 
 ### Unregister an alias
+
 ```bash
 to unreg <alias>
 ```
@@ -31,6 +34,7 @@ to unreg <alias>
 Remove an alias from the database.
 
 ### List all aliases
+
 ```bash
 to list
 ```
@@ -38,6 +42,7 @@ to list
 Display all registered aliases and their paths.
 
 ### Clean invalid aliases
+
 ```bash
 to clean
 ```
@@ -45,6 +50,7 @@ to clean
 Remove aliases pointing to directories that no longer exist.
 
 ### Expand an alias
+
 ```bash
 to exp <alias>
 ```
