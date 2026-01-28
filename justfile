@@ -22,7 +22,7 @@ install-backend: build
 install-bash:
     @echo "Installing to.sh to ~/.local/bin/..."
     @mkdir -p ~/.local/bin
-    @cp internal/bash/to.sh ~/.local/bin/to.sh
+    @cp shell/to.sh ~/.local/bin/to.sh
     @chmod +x ~/.local/bin/to.sh
     @echo "Installed to.sh successfully"
     @echo "Add the following to your shell configuration (.bashrc, .zshrc, etc.):"
