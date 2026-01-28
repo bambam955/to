@@ -25,14 +25,10 @@ See [CLI Reference](docs/CLI.md) for full command documentation.
 
 ```bash
 just install
-```
-
-Then source the wrapper in your shell configuration (`.bashrc`, `.zshrc`, etc.):
-```bash
 source ~/.local/bin/to.sh
 ```
 
-See [INSTALL.md](INSTALL.md) for detailed installation instructions.
+Add `source ~/.local/bin/to.sh` to your `.bashrc`, `.zshrc`, or shell config to make it persistent.
 
 ## Development
 
@@ -42,12 +38,3 @@ just test       # Run tests
 just clean      # Clean build artifacts
 just help       # Show all commands
 ```
-
-## Architecture
-
-- **Backend**: Go binary with database operations and validation
-- **Wrapper**: Bash function for shell integration
-- **Database**: JSON format at `~/.config/to/database.json`
-- **Protocol**: Text-based with `[to] <path>` for navigation, `error: ` for errors
-
-See [PROTOCOL.md](PROTOCOL.md) for protocol details.
