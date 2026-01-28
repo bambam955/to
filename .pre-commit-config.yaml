@@ -1,0 +1,27 @@
+repos:
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.55.2
+    hooks:
+      - id: golangci-lint
+        args: [--timeout=5m]
+        stages: [commit]
+
+  - repo: https://github.com/google/go-fmt
+    rev: v0.0.0-20230802093537-b4f0b46e0e0d
+    hooks:
+      - id: gofmt
+
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.6
+    hooks:
+      - id: shellcheck
+        args: [--enable=all, --shell=bash]
+        files: ^shell/.*\.sh$
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-json

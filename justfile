@@ -1,40 +1,36 @@
 # just recipe file for the 'to' directory navigation tool
 
-set shell := ["bash", "-c"]
-
 # Display help information
 default:
     @just --list
+
+# --------------- USER COMMANDS --------------- #
+
+# Install the backend and wrapper to the local bin dir
+install: build
+    @mkdir -p ~/.local/bin
+    cp -t ~/.local/bin/ bin/to-backend shell/to.sh
+    @chmod +x ~/.local/bin/to-backend ~/.local/bin/to.sh
+    @echo "Add the following to your shell configuration (.bashrc, .zshrc, etc.):"
+    @echo "  source ~/.local/bin/to.sh"
 
 # Build the Go backend binary
 build:
     go build -o bin/to-backend ./cmd/to-backend
 
-# Install the backend binary to ~/.local/bin/
-install-backend: build
-    @echo "Installing to-backend to ~/.local/bin/..."
-    @mkdir -p ~/.local/bin
-    @cp bin/to-backend ~/.local/bin/to-backend
-    @chmod +x ~/.local/bin/to-backend
-    @echo "Installed to-backend successfully"
-
-# Install the bash wrapper to ~/.local/bin/
-install-bash:
-    @echo "Installing to.sh to ~/.local/bin/..."
-    @mkdir -p ~/.local/bin
-    @cp shell/to.sh ~/.local/bin/to.sh
-    @chmod +x ~/.local/bin/to.sh
-    @echo "Installed to.sh successfully"
-    @echo "Add the following to your shell configuration (.bashrc, .zshrc, etc.):"
-    @echo "  source ~/.local/bin/to.sh"
-
-# Install both backend and wrapper
-install: install-backend install-bash
-
 # Uninstall both components
 uninstall:
     @rm -f ~/.local/bin/to-backend
     @rm -f ~/.local/bin/to.sh
+
+# --------------- DEV COMMANDS --------------- #
+
+# Development build (clean, fmt, lint, test, build)
+dev: clean fmt lint test build
+
+# Format all Go source code
+fmt:
+    go fmt ./...
 
 # Run tests
 test:
@@ -45,5 +41,7 @@ clean:
     @rm -rf bin/
     go clean
 
-# Development build (clean, test, build)
-dev: clean test build
+# Lint all source code
+lint:
+    go vet ./...
+    @command -v shellcheck >/dev/null && shellcheck --enable=all --shell=bash shell/*

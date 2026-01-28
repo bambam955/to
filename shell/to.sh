@@ -11,16 +11,20 @@ to() {
     exit_code=$?
     
     # Check if this is a navigation response (starts with "[to] ")
-    if [[ "$output" =~ ^\[to\]\ (.+)$ ]]; then
+    if [[ "${output}" =~ ^\[to\]\ (.+)$ ]]; then
         # Extract the path from the response and change directory
-        local target_dir="${BASH_REMATCH[1]}"
-        cd "$target_dir"
+        local -r target_dir="${BASH_REMATCH[1]}"
+        cd "${target_dir}" || {
+            unset target_dir
+            exit 1
+        }
+        unset target_dir
         return 0
     fi
     
     # For non-navigation commands, output as-is and return the exit code
-    echo "$output"
-    return $exit_code
+    echo "${output}"
+    return "${exit_code}"
 }
 
 # Export the function so it's available in subshells
