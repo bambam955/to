@@ -192,12 +192,12 @@ This spec defines the JSON database schema for storing directory aliases, along 
 - [ ] Create validation rules for all fields
 - [ ] Design metadata fields for future extensibility
 
-### Go Implementation
+### Database Layer Implementation
 
 - [ ] Implement Go data structures matching JSON schema
-- [ ] Create database interface and implementation
-- [ ] Add CRUD operations with proper error handling
-- [ ] Implement atomic file save operations
+- [ ] Create database interface with CRUD operations
+- [ ] Implement database loading and atomic file save operations
+- [ ] Add error categorization and validation error types
 
 ### File Management
 

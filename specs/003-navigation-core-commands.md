@@ -53,11 +53,6 @@ This spec defines the primary user-facing commands for the "to" tool: default na
 
 **Duplicate Directory Handling**: If other aliases point to same directory, show warning but allow registration
 
-**Success Scenario**: New alias created and saved to database
-**Error Scenarios**: Invalid alias format, alias already exists, directory doesn't exist, permission errors
-
-**Duplicate Directory Handling**: If other aliases point to the same directory, show warning but allow registration
-
 ### Unregistration Command
 
 **Usage**: `to unreg <alias>`
@@ -199,10 +194,16 @@ This spec defines the primary user-facing commands for the "to" tool: default na
 - [ ] Design validation flow between command and database layers
 - [ ] Define state change requirements for each operation
 
+### Command Implementation
+
+- [ ] Implement default navigation command (uses database interface from 002)
+- [ ] Implement registration command with validation
+- [ ] Implement unregistration command
+- [ ] Set up Cobra root command structure with subcommands
+- [ ] Configure error message formatting with "error:" prefix
+
 ### CLI Framework
 
-- [ ] Set up Cobra root command structure
-- [ ] Configure subcommand routing
 - [ ] Design argument validation using Cobra
 - [ ] Implement help system and usage messages
 - [ ] Configure error handling integration
