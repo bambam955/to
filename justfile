@@ -3,12 +3,11 @@
 set shell := ["bash", "-c"]
 
 # Display help information
-help:
+default:
     @just --list
 
 # Build the Go backend binary
 build:
-    @echo "Building to-backend..."
     go build -o bin/to-backend ./cmd/to-backend
 
 # Install the backend binary to ~/.local/bin/
@@ -34,10 +33,8 @@ install: install-backend install-bash
 
 # Uninstall both components
 uninstall:
-    @echo "Uninstalling to tool..."
     @rm -f ~/.local/bin/to-backend
     @rm -f ~/.local/bin/to.sh
-    @echo "Uninstalled to tool"
 
 # Run tests
 test:
@@ -50,4 +47,3 @@ clean:
 
 # Development build (clean, test, build)
 dev: clean test build
-    @echo "Development build complete"
