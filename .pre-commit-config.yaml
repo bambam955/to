@@ -1,15 +1,25 @@
 repos:
-  - repo: https://github.com/golangci/golangci-lint
-    rev: v1.55.2
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
     hooks:
-      - id: golangci-lint
-        args: [--timeout=5m]
-        stages: [commit]
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-json
 
-  - repo: https://github.com/google/go-fmt
-    rev: v0.0.0-20230802093537-b4f0b46e0e0d
+  - repo: local
     hooks:
-      - id: gofmt
+      - id: go-fmt
+        name: go fmt
+        entry: gofmt -w
+        language: system
+        types: [go]
+      - id: go-vet
+        name: go vet
+        entry: go vet ./...
+        language: system
+        types: [go]
+        pass_filenames: false
 
   - repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.9.0.6
@@ -17,11 +27,15 @@ repos:
       - id: shellcheck
         args: [--enable=all, --shell=bash]
         files: ^shell/.*\.sh$
-
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+  - repo: local
     hooks:
-      - id: end-of-file-fixer
-      - id: trailing-whitespace
-      - id: check-yaml
-      - id: check-json
+      - id: shfmt
+        name: shfmt
+        entry: shfmt -i 4 -w
+        language: system
+        files: ^shell/.*\.sh$
+
+  - repo: https://github.com/specture-system/specture
+    rev: v0.0.1
+    hooks:
+      - id: validate-specs

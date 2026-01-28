@@ -28,10 +28,6 @@ uninstall:
 # Development build (clean, fmt, lint, test, build)
 dev: clean fmt lint test build
 
-# Format all Go source code
-fmt:
-    go fmt ./...
-
 # Run tests
 test:
     go test -v ./...
@@ -44,4 +40,10 @@ clean:
 # Lint all source code
 lint:
     go vet ./...
-    @command -v shellcheck >/dev/null && shellcheck --enable=all --shell=bash shell/*
+    @command -v shellcheck >/dev/null
+    shellcheck --enable=all --shell=bash shell/*
+
+# Format all Go source code
+fmt:
+    gofmt -w .
+    shfmt -i 4 -w .
