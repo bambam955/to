@@ -43,6 +43,7 @@ This spec defines the primary user-facing commands for the "to" tool: default na
 **Purpose**: Register a new alias pointing to a directory
 
 **Validation Requirements**:
+
 - Alias name: must follow pattern (starts alphanumeric, contains alphanumeric/hyphens/underscores)
 - Directory: must exist and be accessible
 - Uniqueness: alias name must not already exist in database
@@ -92,6 +93,7 @@ This spec defines the primary user-facing commands for the "to" tool: default na
 **Package Choice**: Cobra for CLI command structure and argument parsing
 
 **Rationale**:
+
 - Industry standard for Go CLI applications
 - Built-in support for subcommands and validation
 - Automatic help generation via --help flag
@@ -100,6 +102,7 @@ This spec defines the primary user-facing commands for the "to" tool: default na
 ### Command Structure
 
 **Root Command**: `to`
+
 - Default subcommand handles navigation
 - Subcommands: `reg`, `unreg`, `list`, `clean`, `exp`
 - Flags and arguments handled automatically by Cobra
