@@ -2,9 +2,8 @@ name: Test
 
 on:
   push:
-    branches: [main, 001-feat-bash-golang-integration]
+    branches: [main]
   pull_request:
-    branches: [main, 001-feat-bash-golang-integration]
 
 jobs:
   test:

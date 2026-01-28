@@ -2,9 +2,8 @@ name: Build
 
 on:
   push:
-    branches: [main, 001-feat-bash-golang-integration]
+    branches: [main]
   pull_request:
-    branches: [main, 001-feat-bash-golang-integration]
 
 jobs:
   build:
@@ -19,8 +18,7 @@ jobs:
       - name: Build binary
         run: go build -o bin/to-backend ./cmd/to-backend
 
-      - name: Check binary exists
-        run: test -f bin/to-backend && echo "Build successful"
-
-      - name: Check binary is executable
-        run: test -x bin/to-backend && echo "Binary is executable"
+      - name: Check binary exists and is executable
+        run: |
+          test -f bin/to-backend && echo "Build successful"
+          test -x bin/to-backend && echo "Binary is executable"
