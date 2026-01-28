@@ -34,15 +34,16 @@ This document summarizes the implementation of spec 001, which defines the integ
   - `VerifyPath()` function for checking if installation directory is in PATH
 - Comprehensive test coverage in `internal/install/install_test.go`
 - All tests passing (7 test cases including idempotency verification)
-- Created `Makefile` with targets:
-  - `make build` - Build the Go binary
-  - `make install-backend` - Install binary only
-  - `make install-bash` - Install wrapper only
-  - `make install` - Install both components
-  - `make uninstall` - Remove all components
-  - `make test` - Run all tests
-  - `make clean` - Clean build artifacts
-  - `make dev` - Development build (clean, test, build)
+- Created `justfile` with targets:
+  - `just build` - Build the Go binary
+  - `just install-backend` - Install binary only
+  - `just install-bash` - Install wrapper only
+  - `just install` - Install both components
+  - `just uninstall` - Remove all components
+  - `just test` - Run all tests
+  - `just clean` - Clean build artifacts
+  - `just dev` - Development build (clean, test, build)
+  - `just help` - View all available commands
 
 ### Documentation
 
@@ -166,17 +167,20 @@ Each subsequent component will integrate with the protocol and installation syst
 To verify the implementation:
 
 ```bash
+# View available commands
+just help
+
 # Run tests
-make test
+just test
 
 # Build binary
-make build
+just build
 
 # Check binary
 ./bin/to-backend --help
 
 # Test installation (optional)
-make install
+just install
 source ~/.local/bin/to.sh
 to --help
 ```

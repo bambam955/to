@@ -8,11 +8,11 @@ The "to" tool consists of two components:
 
 ## Installation Methods
 
-### Using Make (Recommended)
+### Using Just (Recommended)
 
 #### Install Both Components
 ```bash
-make install
+just install
 ```
 
 This will:
@@ -23,12 +23,17 @@ This will:
 
 #### Install Only Backend
 ```bash
-make install-backend
+just install-backend
 ```
 
 #### Install Only Wrapper
 ```bash
-make install-bash
+just install-bash
+```
+
+#### View All Available Commands
+```bash
+just help
 ```
 
 ### Manual Installation
@@ -54,7 +59,7 @@ source ~/.local/bin/to.sh
 ## Uninstallation
 
 ```bash
-make uninstall
+just uninstall
 ```
 
 Or manually:
@@ -151,22 +156,22 @@ chmod +x ~/.local/bin/to-backend
 
 ### Build Only
 ```bash
-make build
+just build
 ```
 
 ### Run Tests
 ```bash
-make test
+just test
 ```
 
 ### Clean Build Artifacts
 ```bash
-make clean
+just clean
 ```
 
 ### Development Build (Clean, Test, Build)
 ```bash
-make dev
+just dev
 ```
 
 ## Dependencies
