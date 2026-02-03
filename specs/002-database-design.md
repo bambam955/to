@@ -2,6 +2,8 @@
 status: draft
 author: Bennett Moore
 creation_date: 2026-01-25
+approved_by: Bennett Moore
+approval_date: 2026-02-03
 ---
 
 # Database Design and Schema
