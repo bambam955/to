@@ -11,6 +11,10 @@ import (
 	"to/pkg/errors"
 )
 
+// --- NewDatabase ---
+
+// Verify that a freshly created database has the correct default version,
+// populated timestamps, and an empty (but non-nil) alias list.
 func TestNewDatabase(t *testing.T) {
 	db := NewDatabase()
 	if db.Version != config.DefaultDatabaseVersion {
@@ -27,6 +31,11 @@ func TestNewDatabase(t *testing.T) {
 	}
 }
 
+// --- Load / Save ---
+
+// Verify that saving a database to disk and loading it back produces
+// identical data (version, alias names, and directory paths survive the
+// round trip through JSON serialization).
 func TestLoadSaveRoundTrip(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "database.json")
@@ -62,6 +71,7 @@ func TestLoadSaveRoundTrip(t *testing.T) {
 	}
 }
 
+// Verify that loading a non-existent file returns a NotFound error.
 func TestLoadNotFound(t *testing.T) {
 	_, err := Load("/nonexistent/path/database.json")
 	if err == nil {
@@ -76,6 +86,7 @@ func TestLoadNotFound(t *testing.T) {
 	}
 }
 
+// Verify that loading a file with invalid JSON returns a Corrupted error.
 func TestLoadCorrupted(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "database.json")
@@ -94,6 +105,27 @@ func TestLoadCorrupted(t *testing.T) {
 	}
 }
 
+// Verify that loading a JSON file without an "aliases" key results in an
+// empty (non-nil) slice rather than nil, so callers can iterate safely.
+func TestLoadNilAliases(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "database.json")
+	data := []byte(`{"version":"1.0","created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-01T00:00:00Z"}`)
+	os.WriteFile(path, data, 0o644)
+
+	db, err := Load(path)
+	if err != nil {
+		t.Fatalf("Load() returned error: %v", err)
+	}
+	if db.Aliases == nil {
+		t.Error("Aliases should not be nil after loading")
+	}
+}
+
+// --- AddAlias ---
+
+// Verify that adding a valid alias populates all expected fields
+// (name, directory, created_at).
 func TestAddAliasValid(t *testing.T) {
 	db := NewDatabase()
 	testDir := t.TempDir()
@@ -115,6 +147,7 @@ func TestAddAliasValid(t *testing.T) {
 	}
 }
 
+// Verify that adding an alias with a duplicate name returns an Exists error.
 func TestAddAliasDuplicate(t *testing.T) {
 	db := NewDatabase()
 	testDir := t.TempDir()
@@ -133,6 +166,11 @@ func TestAddAliasDuplicate(t *testing.T) {
 	}
 }
 
+// Table-driven test covering both valid and invalid alias names.
+// Invalid cases include: empty, leading hyphen/underscore, spaces, dots,
+// slashes, and names exceeding the max length.
+// Valid cases include: simple names, hyphens, underscores, leading digits,
+// single characters, and exact max length.
 func TestAddAliasInvalidName(t *testing.T) {
 	db := NewDatabase()
 	testDir := t.TempDir()
@@ -164,6 +202,8 @@ func TestAddAliasInvalidName(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("AddAlias(%q) error = %v, wantErr %v", tt.alias, err, tt.wantErr)
 			}
+			// Clean up successful additions so subsequent subtests
+			// don't hit duplicate-name errors.
 			if err == nil {
 				db.RemoveAlias(tt.alias)
 			}
@@ -171,6 +211,7 @@ func TestAddAliasInvalidName(t *testing.T) {
 	}
 }
 
+// Verify that AddAlias rejects relative paths and non-existent directories.
 func TestAddAliasInvalidDirectory(t *testing.T) {
 	db := NewDatabase()
 
@@ -189,6 +230,9 @@ func TestAddAliasInvalidDirectory(t *testing.T) {
 	})
 }
 
+// --- RemoveAlias ---
+
+// Verify that removing an existing alias deletes it from the database.
 func TestRemoveAliasExisting(t *testing.T) {
 	db := NewDatabase()
 	testDir := t.TempDir()
@@ -202,6 +246,7 @@ func TestRemoveAliasExisting(t *testing.T) {
 	}
 }
 
+// Verify that removing a non-existent alias returns a NotFound error.
 func TestRemoveAliasNonExisting(t *testing.T) {
 	db := NewDatabase()
 	err := db.RemoveAlias("nonexistent")
@@ -217,6 +262,9 @@ func TestRemoveAliasNonExisting(t *testing.T) {
 	}
 }
 
+// --- GetAlias ---
+
+// Verify that GetAlias returns the correct alias by name.
 func TestGetAliasExisting(t *testing.T) {
 	db := NewDatabase()
 	testDir := t.TempDir()
@@ -234,6 +282,7 @@ func TestGetAliasExisting(t *testing.T) {
 	}
 }
 
+// Verify that looking up a non-existent alias returns a NotFound error.
 func TestGetAliasNonExisting(t *testing.T) {
 	db := NewDatabase()
 	_, err := db.GetAlias("nonexistent")
@@ -249,6 +298,10 @@ func TestGetAliasNonExisting(t *testing.T) {
 	}
 }
 
+// --- ListAliases ---
+
+// Verify that ListAliases returns all aliases and that the returned slice
+// is a copy — mutating it must not affect the database's internal state.
 func TestListAliases(t *testing.T) {
 	db := NewDatabase()
 	dir1 := t.TempDir()
@@ -261,12 +314,14 @@ func TestListAliases(t *testing.T) {
 		t.Fatalf("ListAliases() length = %d, want 2", len(aliases))
 	}
 
+	// Mutate the copy and verify the original is unchanged.
 	aliases[0].Name = "modified"
 	if db.Aliases[0].Name == "modified" {
 		t.Error("ListAliases() should return a copy, not a reference")
 	}
 }
 
+// Verify that ListAliases returns an empty slice (not nil) for an empty database.
 func TestListAliasesEmpty(t *testing.T) {
 	db := NewDatabase()
 	aliases := db.ListAliases()
@@ -275,6 +330,10 @@ func TestListAliasesEmpty(t *testing.T) {
 	}
 }
 
+// --- UpdateLastVisited ---
+
+// Verify that UpdateLastVisited sets the last_visited timestamp on the
+// correct alias.
 func TestUpdateLastVisited(t *testing.T) {
 	db := NewDatabase()
 	testDir := t.TempDir()
@@ -290,6 +349,7 @@ func TestUpdateLastVisited(t *testing.T) {
 	}
 }
 
+// Verify that UpdateLastVisited returns a NotFound error for a missing alias.
 func TestUpdateLastVisitedNonExisting(t *testing.T) {
 	db := NewDatabase()
 	err := db.UpdateLastVisited("nonexistent")
@@ -305,6 +365,10 @@ func TestUpdateLastVisitedNonExisting(t *testing.T) {
 	}
 }
 
+// --- FindByDirectory ---
+
+// Verify that FindByDirectory returns all aliases pointing to the same
+// directory (multiple aliases per directory is supported).
 func TestFindByDirectory(t *testing.T) {
 	db := NewDatabase()
 	testDir := t.TempDir()
@@ -319,6 +383,8 @@ func TestFindByDirectory(t *testing.T) {
 	}
 }
 
+// Verify that FindByDirectory returns an empty result for a directory that
+// has no aliases registered.
 func TestFindByDirectoryNoMatch(t *testing.T) {
 	db := NewDatabase()
 	found := db.FindByDirectory("/nonexistent")
@@ -327,10 +393,15 @@ func TestFindByDirectoryNoMatch(t *testing.T) {
 	}
 }
 
+// --- CleanInvalid ---
+
+// Verify that CleanInvalid removes aliases whose directories no longer
+// exist on disk and returns the removed entries.
 func TestCleanInvalid(t *testing.T) {
 	db := NewDatabase()
 	validDir := t.TempDir()
 
+	// Add one alias to a real directory and one to a non-existent path.
 	db.Aliases = append(db.Aliases, Alias{
 		Name:      "valid",
 		Directory: validDir,
@@ -357,6 +428,7 @@ func TestCleanInvalid(t *testing.T) {
 	}
 }
 
+// Verify that CleanInvalid is a no-op when all aliases are valid.
 func TestCleanInvalidNoneRemoved(t *testing.T) {
 	db := NewDatabase()
 	validDir := t.TempDir()
@@ -372,6 +444,10 @@ func TestCleanInvalidNoneRemoved(t *testing.T) {
 	}
 }
 
+// --- ValidateAliasName ---
+
+// Table-driven test exercising all alias name validation rules:
+// length limits, allowed/disallowed characters, and boundary values.
 func TestValidateAliasName(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -406,6 +482,10 @@ func TestValidateAliasName(t *testing.T) {
 	}
 }
 
+// --- ValidateDirectory ---
+
+// Exercises all directory validation rules: empty, relative, non-existent,
+// too long, file-instead-of-directory, and a valid directory.
 func TestValidateDirectory(t *testing.T) {
 	validDir := t.TempDir()
 
@@ -445,6 +525,7 @@ func TestValidateDirectory(t *testing.T) {
 		}
 	})
 
+	// Ensure a regular file (not a directory) is rejected.
 	t.Run("file not directory", func(t *testing.T) {
 		tmpFile := filepath.Join(t.TempDir(), "file.txt")
 		os.WriteFile(tmpFile, []byte("test"), 0o644)
@@ -455,6 +536,10 @@ func TestValidateDirectory(t *testing.T) {
 	})
 }
 
+// --- Atomic Save ---
+
+// Verify that Save creates the file with the correct permissions and
+// writes valid, parseable JSON content.
 func TestAtomicSave(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "database.json")
@@ -464,6 +549,7 @@ func TestAtomicSave(t *testing.T) {
 		t.Fatalf("Save() returned error: %v", err)
 	}
 
+	// Check file permissions match the expected mode.
 	info, err := os.Stat(path)
 	if err != nil {
 		t.Fatalf("database file not created: %v", err)
@@ -472,6 +558,7 @@ func TestAtomicSave(t *testing.T) {
 		t.Errorf("file permissions = %o, want %o", info.Mode().Perm(), filePermissions)
 	}
 
+	// Verify the on-disk content is valid JSON with the expected version.
 	data, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatalf("cannot read database file: %v", err)
@@ -485,6 +572,10 @@ func TestAtomicSave(t *testing.T) {
 	}
 }
 
+// --- InitDatabase ---
+
+// Verify that InitDatabase creates nested parent directories, writes the
+// database file, and that the file can be loaded back successfully.
 func TestInitDatabase(t *testing.T) {
 	dir := t.TempDir()
 	subDir := filepath.Join(dir, "sub", "dir")
@@ -498,14 +589,17 @@ func TestInitDatabase(t *testing.T) {
 		t.Errorf("Version = %q, want %q", db.Version, config.DefaultDatabaseVersion)
 	}
 
+	// Verify parent directories were created.
 	if _, err := os.Stat(subDir); err != nil {
 		t.Fatalf("directories were not created: %v", err)
 	}
 
+	// Verify database file exists on disk.
 	if _, err := os.Stat(path); err != nil {
 		t.Fatalf("database file was not created: %v", err)
 	}
 
+	// Verify the file can be loaded and has the expected defaults.
 	loaded, err := Load(path)
 	if err != nil {
 		t.Fatalf("Load() after InitDatabase returned error: %v", err)
@@ -515,20 +609,5 @@ func TestInitDatabase(t *testing.T) {
 	}
 	if len(loaded.Aliases) != 0 {
 		t.Errorf("loaded aliases length = %d, want 0", len(loaded.Aliases))
-	}
-}
-
-func TestLoadNilAliases(t *testing.T) {
-	dir := t.TempDir()
-	path := filepath.Join(dir, "database.json")
-	data := []byte(`{"version":"1.0","created_at":"2026-01-01T00:00:00Z","updated_at":"2026-01-01T00:00:00Z"}`)
-	os.WriteFile(path, data, 0o644)
-
-	db, err := Load(path)
-	if err != nil {
-		t.Fatalf("Load() returned error: %v", err)
-	}
-	if db.Aliases == nil {
-		t.Error("Aliases should not be nil after loading")
 	}
 }
