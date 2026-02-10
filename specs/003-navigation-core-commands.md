@@ -1,5 +1,5 @@
 ---
-status: draft
+status: approved
 author: Bennett Moore
 creation_date: 2026-01-25
 approved_by: Bennett Moore
