@@ -5,7 +5,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "to-backend",
+	Use:   "to",
 	Short: "Directory navigation backend for the 'to' tool",
 	Long:  "A modern directory navigation tool with JSON database support.",
 }

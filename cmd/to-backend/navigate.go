@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	rootCmd.Use = "to-backend [alias]"
+	rootCmd.Use = "to [alias]"
 	rootCmd.Args = cobra.ExactArgs(1)
 	rootCmd.SilenceUsage = true
 	rootCmd.SilenceErrors = true
