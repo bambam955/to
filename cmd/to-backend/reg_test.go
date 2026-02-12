@@ -16,9 +16,8 @@ func TestRegCommand(t *testing.T) {
 
 		targetDir := t.TempDir()
 
-		var stdout, stderr bytes.Buffer
+		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"reg", "myalias", targetDir})
 
 		err := rootCmd.Execute()
@@ -43,9 +42,8 @@ func TestRegCommand(t *testing.T) {
 		targetDir := t.TempDir()
 
 		// First registration should succeed.
-		var stdout, stderr bytes.Buffer
+		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"reg", "dupalias", targetDir})
 
 		err := rootCmd.Execute()
@@ -55,9 +53,7 @@ func TestRegCommand(t *testing.T) {
 
 		// Second registration with the same alias name should fail.
 		stdout.Reset()
-		stderr.Reset()
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"reg", "dupalias", targetDir})
 
 		err = rootCmd.Execute()
@@ -65,9 +61,8 @@ func TestRegCommand(t *testing.T) {
 			t.Fatal("expected error for duplicate alias, got nil")
 		}
 
-		errOutput := stderr.String()
-		if !strings.Contains(errOutput, "already exists") {
-			t.Errorf("expected 'already exists' error, got: %s", errOutput)
+		if !strings.Contains(err.Error(), "already exists") {
+			t.Errorf("expected 'already exists' error, got: %s", err.Error())
 		}
 	})
 
@@ -78,9 +73,6 @@ func TestRegCommand(t *testing.T) {
 
 		targetDir := t.TempDir()
 
-		var stdout, stderr bytes.Buffer
-		rootCmd.SetOut(&stdout)
-		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"reg", "!!!invalid", targetDir})
 
 		err := rootCmd.Execute()
@@ -88,9 +80,8 @@ func TestRegCommand(t *testing.T) {
 			t.Fatal("expected error for invalid alias name, got nil")
 		}
 
-		errOutput := stderr.String()
-		if !strings.Contains(errOutput, "error:") {
-			t.Errorf("expected error message in stderr, got: %s", errOutput)
+		if !strings.Contains(err.Error(), "invalid") {
+			t.Errorf("expected 'invalid' in error, got: %s", err.Error())
 		}
 	})
 
@@ -99,19 +90,11 @@ func TestRegCommand(t *testing.T) {
 		dbPath := filepath.Join(dbDir, "database.json")
 		t.Setenv("TO_DB", dbPath)
 
-		var stdout, stderr bytes.Buffer
-		rootCmd.SetOut(&stdout)
-		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"reg", "nodir", "/nonexistent/path"})
 
 		err := rootCmd.Execute()
 		if err == nil {
 			t.Fatal("expected error for nonexistent directory, got nil")
-		}
-
-		errOutput := stderr.String()
-		if !strings.Contains(errOutput, "error:") {
-			t.Errorf("expected error message in stderr, got: %s", errOutput)
 		}
 	})
 
@@ -123,9 +106,8 @@ func TestRegCommand(t *testing.T) {
 		targetDir := t.TempDir()
 
 		// First registration.
-		var stdout, stderr bytes.Buffer
+		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"reg", "first", targetDir})
 
 		err := rootCmd.Execute()
@@ -135,7 +117,7 @@ func TestRegCommand(t *testing.T) {
 
 		// Second registration with a different alias but the same directory.
 		stdout.Reset()
-		stderr.Reset()
+		var stderr bytes.Buffer
 		rootCmd.SetOut(&stdout)
 		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"reg", "second", targetDir})
@@ -180,9 +162,8 @@ func TestRegCommand(t *testing.T) {
 		}
 		t.Cleanup(func() { os.Chdir(origDir) })
 
-		var stdout, stderr bytes.Buffer
+		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"reg", "reltest", "subdir"})
 
 		err = rootCmd.Execute()

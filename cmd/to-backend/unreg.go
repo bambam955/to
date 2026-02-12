@@ -27,23 +27,19 @@ func runUnreg(cmd *cobra.Command, args []string) error {
 
 	dbPath, err := config.GetDatabasePath()
 	if err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 
 	db, err := loadOrInitDB(dbPath)
 	if err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 
 	if err := db.RemoveAlias(name); err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 
 	if err := db.Save(dbPath); err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 

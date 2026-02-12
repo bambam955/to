@@ -33,14 +33,13 @@ func TestNavigateCommand(t *testing.T) {
 
 		t.Setenv("TO_DB", dbPath)
 
-		var stdout, stderr bytes.Buffer
+		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"proj"})
 
 		err = rootCmd.Execute()
 		if err != nil {
-			t.Fatalf("expected no error, got: %v (stderr: %s)", err, stderr.String())
+			t.Fatalf("expected no error, got: %v", err)
 		}
 
 		output := stdout.String()
@@ -62,9 +61,6 @@ func TestNavigateCommand(t *testing.T) {
 
 		t.Setenv("TO_DB", dbPath)
 
-		var stdout, stderr bytes.Buffer
-		rootCmd.SetOut(&stdout)
-		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"nonexistent"})
 
 		err = rootCmd.Execute()
@@ -72,9 +68,8 @@ func TestNavigateCommand(t *testing.T) {
 			t.Fatal("expected error for nonexistent alias, got nil")
 		}
 
-		errOutput := stderr.String()
-		if !strings.Contains(errOutput, "not found") {
-			t.Errorf("expected stderr to contain 'not found', got %q", errOutput)
+		if !strings.Contains(err.Error(), "not found") {
+			t.Errorf("expected error to contain 'not found', got %q", err.Error())
 		}
 	})
 
@@ -106,9 +101,6 @@ func TestNavigateCommand(t *testing.T) {
 
 		t.Setenv("TO_DB", dbPath)
 
-		var stdout, stderr bytes.Buffer
-		rootCmd.SetOut(&stdout)
-		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"gone"})
 
 		err = rootCmd.Execute()
@@ -116,12 +108,11 @@ func TestNavigateCommand(t *testing.T) {
 			t.Fatal("expected error for removed directory, got nil")
 		}
 
-		errOutput := stderr.String()
-		if !strings.Contains(errOutput, "directory no longer exists") {
-			t.Errorf("expected stderr to contain 'directory no longer exists', got %q", errOutput)
+		if !strings.Contains(err.Error(), "directory no longer exists") {
+			t.Errorf("expected error to contain 'directory no longer exists', got %q", err.Error())
 		}
-		if !strings.Contains(errOutput, targetDir) {
-			t.Errorf("expected stderr to contain directory path %q, got %q", targetDir, errOutput)
+		if !strings.Contains(err.Error(), targetDir) {
+			t.Errorf("expected error to contain directory path %q, got %q", targetDir, err.Error())
 		}
 	})
 }

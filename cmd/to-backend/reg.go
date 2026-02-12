@@ -47,21 +47,18 @@ func runReg(cmd *cobra.Command, args []string) error {
 	// Resolve to absolute path.
 	absDir, err := filepath.Abs(dir)
 	if err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 
 	// Get database path.
 	dbPath, err := config.GetDatabasePath()
 	if err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 
 	// Load or initialize the database.
 	db, err := loadOrInitDB(dbPath)
 	if err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 
@@ -77,13 +74,11 @@ func runReg(cmd *cobra.Command, args []string) error {
 
 	// Add the alias (validates name, directory, and checks duplicate names).
 	if err := db.AddAlias(name, absDir); err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 
 	// Save the database.
 	if err := db.Save(dbPath); err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 

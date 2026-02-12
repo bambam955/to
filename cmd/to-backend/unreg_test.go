@@ -29,14 +29,13 @@ func TestUnregCommand(t *testing.T) {
 			t.Fatalf("failed to save database: %v", err)
 		}
 
-		var stdout, stderr bytes.Buffer
+		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"unreg", "myalias"})
 
 		err = rootCmd.Execute()
 		if err != nil {
-			t.Fatalf("expected no error, got: %v (stderr: %s)", err, stderr.String())
+			t.Fatalf("expected no error, got: %v", err)
 		}
 
 		output := stdout.String()
@@ -57,9 +56,6 @@ func TestUnregCommand(t *testing.T) {
 			t.Fatalf("failed to init database: %v", err)
 		}
 
-		var stdout, stderr bytes.Buffer
-		rootCmd.SetOut(&stdout)
-		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"unreg", "nonexistent"})
 
 		err = rootCmd.Execute()
@@ -67,9 +63,8 @@ func TestUnregCommand(t *testing.T) {
 			t.Fatal("expected an error for nonexistent alias, got nil")
 		}
 
-		errOutput := stderr.String()
-		if !strings.Contains(errOutput, "not found") {
-			t.Errorf("expected 'not found' in stderr, got: %q", errOutput)
+		if !strings.Contains(err.Error(), "not found") {
+			t.Errorf("expected 'not found' in error, got: %q", err.Error())
 		}
 	})
 
@@ -92,9 +87,8 @@ func TestUnregCommand(t *testing.T) {
 			t.Fatalf("failed to save database: %v", err)
 		}
 
-		var stdout, stderr bytes.Buffer
+		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetErr(&stderr)
 		rootCmd.SetArgs([]string{"unreg", "removeme"})
 
 		err = rootCmd.Execute()

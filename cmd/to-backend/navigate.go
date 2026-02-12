@@ -22,34 +22,28 @@ func runNavigate(cmd *cobra.Command, args []string) error {
 
 	dbPath, err := config.GetDatabasePath()
 	if err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 
 	db, err := loadOrInitDB(dbPath)
 	if err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 
 	entry, err := db.GetAlias(alias)
 	if err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 
 	if err := database.ValidateDirectory(entry.Directory); err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: directory no longer exists: %s\n", entry.Directory)
-		return err
+		return fmt.Errorf("directory no longer exists: %s", entry.Directory)
 	}
 
 	if err := db.UpdateLastVisited(alias); err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 
 	if err := db.Save(dbPath); err != nil {
-		fmt.Fprintf(cmd.ErrOrStderr(), "error: %s\n", err)
 		return err
 	}
 
