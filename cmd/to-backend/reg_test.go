@@ -140,6 +140,25 @@ func TestRegCommand(t *testing.T) {
 		}
 	})
 
+	t.Run("reserved command name", func(t *testing.T) {
+		dbDir := t.TempDir()
+		dbPath := filepath.Join(dbDir, "database.json")
+		t.Setenv("TO_DB", dbPath)
+
+		targetDir := t.TempDir()
+
+		rootCmd.SetArgs([]string{"reg", "reg", targetDir})
+
+		err := rootCmd.Execute()
+		if err == nil {
+			t.Fatal("expected error for reserved name, got nil")
+		}
+
+		if !strings.Contains(err.Error(), "reserved command name") {
+			t.Errorf("expected 'reserved command name' error, got: %s", err.Error())
+		}
+	})
+
 	t.Run("relative path resolution", func(t *testing.T) {
 		dbDir := t.TempDir()
 		dbPath := filepath.Join(dbDir, "database.json")
