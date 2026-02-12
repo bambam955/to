@@ -9,6 +9,9 @@ import (
 	"to/pkg/protocol"
 )
 
+// runNavigate resolves an alias to its directory, verifies the directory
+// still exists, updates the last-visited timestamp, and emits a protocol
+// response that the shell wrapper parses to perform cd.
 func runNavigate(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
 		return fmt.Errorf("usage: to <alias>")

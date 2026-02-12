@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// runUnreg removes an alias from the database. Returns an error if the
+// alias does not exist.
 func runUnreg(cmd *cobra.Command, args []string) error {
 	if len(args) != 1 {
 		return fmt.Errorf("usage: to --unreg <alias>")

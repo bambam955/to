@@ -26,6 +26,9 @@ func loadOrInitDB(dbPath string) (*database.Database, error) {
 	return db, nil
 }
 
+// runReg registers a new alias. It resolves relative paths to absolute,
+// warns on duplicate directories (different alias pointing to the same dir),
+// and rejects duplicate alias names or invalid inputs.
 func runReg(cmd *cobra.Command, args []string) error {
 	if len(args) != 2 {
 		return fmt.Errorf("usage: to --reg <alias> <directory>")
