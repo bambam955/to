@@ -19,7 +19,9 @@ to() {
     fi
 
     # For non-navigation commands, output as-is and return the exit code
-    echo "${output}"
+    if [[ -n "${output}" ]]; then
+        echo "${output}"
+    fi
     return "${exit_code}"
 }
 
