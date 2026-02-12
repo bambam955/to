@@ -20,15 +20,17 @@ Changes directory to the registered alias. Outputs `[to] <path>` to stdout on su
 ### Register an alias
 
 ```bash
-to reg <alias> <directory>
+to --reg <alias> <directory>
+to -r <alias> <directory>
 ```
 
-Register a new alias pointing to a directory.
+Register a new alias pointing to a directory. Relative paths are resolved to absolute. Warns if another alias already points to the same directory.
 
 ### Unregister an alias
 
 ```bash
-to unreg <alias>
+to --unreg <alias>
+to -u <alias>
 ```
 
 Remove an alias from the database.
