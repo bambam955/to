@@ -1,4 +1,5 @@
 ---
+number: 3
 status: approved
 author: Bennett Moore
 creation_date: 2026-01-25
