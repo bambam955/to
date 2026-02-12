@@ -1,6 +1,6 @@
 ---
 number: 3
-status: in-progress
+status: completed
 author: Bennett Moore
 creation_date: 2026-01-25
 approved_by: Bennett Moore
@@ -164,52 +164,52 @@ This spec defines the primary user-facing commands for the "to" tool: default na
 
 ### Default Navigation
 
-- [ ] Define navigation behavior and success/error scenarios
-- [ ] Design timestamp update mechanism
-- [ ] Specify directory validation requirements
-- [ ] Design error messages for missing/invalid aliases
-- [ ] Create Cobra command structure for navigation
+- [x] Define navigation behavior and success/error scenarios
+- [x] Design timestamp update mechanism
+- [x] Specify directory validation requirements
+- [x] Design error messages for missing/invalid aliases
+- [x] Create Cobra command structure for navigation
 
 ### Registration Command
 
-- [ ] Define validation requirements for alias names and directories
-- [ ] Design path resolution strategy (relative to absolute)
-- [ ] Specify duplicate detection and warning behavior
-- [ ] Design success and error message patterns
-- [ ] Create Cobra subcommand for registration
+- [x] Define validation requirements for alias names and directories
+- [x] Design path resolution strategy (relative to absolute)
+- [x] Specify duplicate detection and warning behavior
+- [x] Design success and error message patterns
+- [x] Create Cobra subcommand for registration
 
 ### Unregistration Command
 
-- [ ] Define existence validation requirements
-- [ ] Design removal behavior and database update process
-- [ ] Specify error handling for permission and file issues
-- [ ] Design success confirmation messages
-- [ ] Create Cobra subcommand for unregistration
+- [x] Define existence validation requirements
+- [x] Design removal behavior and database update process
+- [x] Specify error handling for permission and file issues
+- [x] Design success confirmation messages
+- [x] Create Cobra subcommand for unregistration
 
 ### User Experience
 
-- [ ] Design consistent message formatting across commands
-- [ ] Define error categorization and user guidance
-- [ ] Specify warning display behavior
-- [ ] Design feedback for all user actions
+- [x] Design consistent message formatting across commands
+- [x] Define error categorization and user guidance
+- [x] Specify warning display behavior
+- [x] Design feedback for all user actions
 
 ### Integration Points
 
-- [ ] Define how commands interact with database layer
-- [ ] Specify error propagation from database operations
-- [ ] Design validation flow between command and database layers
-- [ ] Define state change requirements for each operation
+- [x] Define how commands interact with database layer
+- [x] Specify error propagation from database operations
+- [x] Design validation flow between command and database layers
+- [x] Define state change requirements for each operation
 
 ### Command Implementation
 
-- [ ] Implement default navigation command (uses database interface from 002)
-- [ ] Implement registration command with validation
-- [ ] Implement unregistration command
-- [ ] Set up Cobra root command structure with subcommands
-- [ ] Configure error message formatting with "error:" prefix
+- [x] Implement default navigation command (uses database interface from 002)
+- [x] Implement registration command with validation
+- [x] Implement unregistration command
+- [x] Set up Cobra root command structure with subcommands
+- [x] Configure error message formatting with "error:" prefix
 
 ### CLI Framework
 
-- [ ] Design argument validation using Cobra
-- [ ] Implement help system and usage messages
-- [ ] Configure error handling integration
+- [x] Design argument validation using Cobra
+- [x] Implement help system and usage messages
+- [x] Configure error handling integration
