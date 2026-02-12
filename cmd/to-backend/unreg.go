@@ -8,21 +8,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var unregCmd = &cobra.Command{
-	Use:           "unreg <alias>",
-	Short:         "Unregister an alias",
-	Long:          "Remove an alias from the database.",
-	Args:          cobra.ExactArgs(1),
-	SilenceUsage:  true,
-	SilenceErrors: true,
-	RunE:          runUnreg,
-}
-
-func init() {
-	rootCmd.AddCommand(unregCmd)
-}
-
 func runUnreg(cmd *cobra.Command, args []string) error {
+	if len(args) != 1 {
+		return fmt.Errorf("usage: to --unreg <alias>")
+	}
+
 	name := args[0]
 
 	dbPath, err := config.GetDatabasePath()

@@ -12,20 +12,6 @@ import (
 	"to/pkg/errors"
 )
 
-var regCmd = &cobra.Command{
-	Use:           "reg <alias> <directory>",
-	Short:         "Register a new alias",
-	Long:          "Register a new alias pointing to a directory.",
-	Args:          cobra.ExactArgs(2),
-	SilenceUsage:  true,
-	SilenceErrors: true,
-	RunE:          runReg,
-}
-
-func init() {
-	rootCmd.AddCommand(regCmd)
-}
-
 // loadOrInitDB loads the database from the given path, or initializes a new
 // one if the file does not exist.
 func loadOrInitDB(dbPath string) (*database.Database, error) {
@@ -40,23 +26,13 @@ func loadOrInitDB(dbPath string) (*database.Database, error) {
 	return db, nil
 }
 
-// reservedNames returns the set of subcommand names that cannot be used as aliases.
-func reservedNames() map[string]bool {
-	reserved := make(map[string]bool)
-	for _, cmd := range rootCmd.Commands() {
-		reserved[cmd.Name()] = true
-	}
-	return reserved
-}
-
 func runReg(cmd *cobra.Command, args []string) error {
+	if len(args) != 2 {
+		return fmt.Errorf("usage: to --reg <alias> <directory>")
+	}
+
 	name := args[0]
 	dir := args[1]
-
-	// Reject alias names that conflict with subcommand names.
-	if reservedNames()[name] {
-		return fmt.Errorf("'%s' is a reserved command name", name)
-	}
 
 	// Resolve to absolute path.
 	absDir, err := filepath.Abs(dir)

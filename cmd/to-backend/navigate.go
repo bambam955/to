@@ -9,15 +9,11 @@ import (
 	"to/pkg/protocol"
 )
 
-func init() {
-	rootCmd.Use = "to [alias]"
-	rootCmd.Args = cobra.ExactArgs(1)
-	rootCmd.SilenceUsage = true
-	rootCmd.SilenceErrors = true
-	rootCmd.RunE = runNavigate
-}
-
 func runNavigate(cmd *cobra.Command, args []string) error {
+	if len(args) != 1 {
+		return fmt.Errorf("usage: to <alias>")
+	}
+
 	alias := args[0]
 
 	dbPath, err := config.GetDatabasePath()

@@ -11,13 +11,13 @@ import (
 
 func TestUnregCommand(t *testing.T) {
 	t.Run("successful unregistration", func(t *testing.T) {
+		resetFlags(t)
 		tmpDir := t.TempDir()
 		targetDir := t.TempDir()
 		dbPath := filepath.Join(tmpDir, "database.json")
 
 		t.Setenv("TO_DB", dbPath)
 
-		// Initialize database and add an alias manually.
 		db, err := database.InitDatabase(dbPath)
 		if err != nil {
 			t.Fatalf("failed to init database: %v", err)
@@ -31,7 +31,7 @@ func TestUnregCommand(t *testing.T) {
 
 		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetArgs([]string{"unreg", "myalias"})
+		rootCmd.SetArgs([]string{"--unreg", "myalias"})
 
 		err = rootCmd.Execute()
 		if err != nil {
@@ -44,19 +44,53 @@ func TestUnregCommand(t *testing.T) {
 		}
 	})
 
+	t.Run("short flag", func(t *testing.T) {
+		resetFlags(t)
+		tmpDir := t.TempDir()
+		targetDir := t.TempDir()
+		dbPath := filepath.Join(tmpDir, "database.json")
+
+		t.Setenv("TO_DB", dbPath)
+
+		db, err := database.InitDatabase(dbPath)
+		if err != nil {
+			t.Fatalf("failed to init database: %v", err)
+		}
+		if err := db.AddAlias("shorttest", targetDir); err != nil {
+			t.Fatalf("failed to add alias: %v", err)
+		}
+		if err := db.Save(dbPath); err != nil {
+			t.Fatalf("failed to save database: %v", err)
+		}
+
+		var stdout bytes.Buffer
+		rootCmd.SetOut(&stdout)
+		rootCmd.SetArgs([]string{"-u", "shorttest"})
+
+		err = rootCmd.Execute()
+		if err != nil {
+			t.Fatalf("expected no error, got: %v", err)
+		}
+
+		output := stdout.String()
+		if !strings.Contains(output, "unregistered 'shorttest'") {
+			t.Errorf("expected success message, got: %q", output)
+		}
+	})
+
 	t.Run("alias not found", func(t *testing.T) {
+		resetFlags(t)
 		tmpDir := t.TempDir()
 		dbPath := filepath.Join(tmpDir, "database.json")
 
 		t.Setenv("TO_DB", dbPath)
 
-		// Initialize an empty database.
 		_, err := database.InitDatabase(dbPath)
 		if err != nil {
 			t.Fatalf("failed to init database: %v", err)
 		}
 
-		rootCmd.SetArgs([]string{"unreg", "nonexistent"})
+		rootCmd.SetArgs([]string{"--unreg", "nonexistent"})
 
 		err = rootCmd.Execute()
 		if err == nil {
@@ -69,13 +103,13 @@ func TestUnregCommand(t *testing.T) {
 	})
 
 	t.Run("alias is actually removed from database", func(t *testing.T) {
+		resetFlags(t)
 		tmpDir := t.TempDir()
 		targetDir := t.TempDir()
 		dbPath := filepath.Join(tmpDir, "database.json")
 
 		t.Setenv("TO_DB", dbPath)
 
-		// Initialize database and add an alias.
 		db, err := database.InitDatabase(dbPath)
 		if err != nil {
 			t.Fatalf("failed to init database: %v", err)
@@ -89,14 +123,13 @@ func TestUnregCommand(t *testing.T) {
 
 		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetArgs([]string{"unreg", "removeme"})
+		rootCmd.SetArgs([]string{"--unreg", "removeme"})
 
 		err = rootCmd.Execute()
 		if err != nil {
 			t.Fatalf("expected no error, got: %v", err)
 		}
 
-		// Reload the database and verify alias is gone.
 		reloaded, err := database.Load(dbPath)
 		if err != nil {
 			t.Fatalf("failed to reload database: %v", err)

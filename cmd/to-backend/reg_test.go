@@ -10,6 +10,7 @@ import (
 
 func TestRegCommand(t *testing.T) {
 	t.Run("successful registration", func(t *testing.T) {
+		resetFlags(t)
 		dbDir := t.TempDir()
 		dbPath := filepath.Join(dbDir, "database.json")
 		t.Setenv("TO_DB", dbPath)
@@ -18,7 +19,7 @@ func TestRegCommand(t *testing.T) {
 
 		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetArgs([]string{"reg", "myalias", targetDir})
+		rootCmd.SetArgs([]string{"--reg", "myalias", targetDir})
 
 		err := rootCmd.Execute()
 		if err != nil {
@@ -34,27 +35,49 @@ func TestRegCommand(t *testing.T) {
 		}
 	})
 
-	t.Run("duplicate alias", func(t *testing.T) {
+	t.Run("short flag", func(t *testing.T) {
+		resetFlags(t)
 		dbDir := t.TempDir()
 		dbPath := filepath.Join(dbDir, "database.json")
 		t.Setenv("TO_DB", dbPath)
 
 		targetDir := t.TempDir()
 
-		// First registration should succeed.
 		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetArgs([]string{"reg", "dupalias", targetDir})
+		rootCmd.SetArgs([]string{"-r", "shortflag", targetDir})
+
+		err := rootCmd.Execute()
+		if err != nil {
+			t.Fatalf("expected no error, got: %v", err)
+		}
+
+		output := stdout.String()
+		if !strings.Contains(output, "registered 'shortflag'") {
+			t.Errorf("expected success message, got: %s", output)
+		}
+	})
+
+	t.Run("duplicate alias", func(t *testing.T) {
+		resetFlags(t)
+		dbDir := t.TempDir()
+		dbPath := filepath.Join(dbDir, "database.json")
+		t.Setenv("TO_DB", dbPath)
+
+		targetDir := t.TempDir()
+
+		var stdout bytes.Buffer
+		rootCmd.SetOut(&stdout)
+		rootCmd.SetArgs([]string{"--reg", "dupalias", targetDir})
 
 		err := rootCmd.Execute()
 		if err != nil {
 			t.Fatalf("first registration failed: %v", err)
 		}
 
-		// Second registration with the same alias name should fail.
 		stdout.Reset()
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetArgs([]string{"reg", "dupalias", targetDir})
+		rootCmd.SetArgs([]string{"--reg", "dupalias", targetDir})
 
 		err = rootCmd.Execute()
 		if err == nil {
@@ -67,13 +90,14 @@ func TestRegCommand(t *testing.T) {
 	})
 
 	t.Run("invalid alias name", func(t *testing.T) {
+		resetFlags(t)
 		dbDir := t.TempDir()
 		dbPath := filepath.Join(dbDir, "database.json")
 		t.Setenv("TO_DB", dbPath)
 
 		targetDir := t.TempDir()
 
-		rootCmd.SetArgs([]string{"reg", "!!!invalid", targetDir})
+		rootCmd.SetArgs([]string{"--reg", "!!!invalid", targetDir})
 
 		err := rootCmd.Execute()
 		if err == nil {
@@ -86,11 +110,12 @@ func TestRegCommand(t *testing.T) {
 	})
 
 	t.Run("directory does not exist", func(t *testing.T) {
+		resetFlags(t)
 		dbDir := t.TempDir()
 		dbPath := filepath.Join(dbDir, "database.json")
 		t.Setenv("TO_DB", dbPath)
 
-		rootCmd.SetArgs([]string{"reg", "nodir", "/nonexistent/path"})
+		rootCmd.SetArgs([]string{"--reg", "nodir", "/nonexistent/path"})
 
 		err := rootCmd.Execute()
 		if err == nil {
@@ -99,79 +124,74 @@ func TestRegCommand(t *testing.T) {
 	})
 
 	t.Run("duplicate directory warning", func(t *testing.T) {
+		resetFlags(t)
 		dbDir := t.TempDir()
 		dbPath := filepath.Join(dbDir, "database.json")
 		t.Setenv("TO_DB", dbPath)
 
 		targetDir := t.TempDir()
 
-		// First registration.
 		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetArgs([]string{"reg", "first", targetDir})
+		rootCmd.SetArgs([]string{"--reg", "first", targetDir})
 
 		err := rootCmd.Execute()
 		if err != nil {
 			t.Fatalf("first registration failed: %v", err)
 		}
 
-		// Second registration with a different alias but the same directory.
 		stdout.Reset()
 		var stderr bytes.Buffer
 		rootCmd.SetOut(&stdout)
 		rootCmd.SetErr(&stderr)
-		rootCmd.SetArgs([]string{"reg", "second", targetDir})
+		rootCmd.SetArgs([]string{"--reg", "second", targetDir})
 
 		err = rootCmd.Execute()
 		if err != nil {
 			t.Fatalf("second registration should succeed, got: %v", err)
 		}
 
-		// Command should succeed.
 		output := stdout.String()
 		if !strings.Contains(output, "registered 'second'") {
 			t.Errorf("expected success message, got: %s", output)
 		}
 
-		// Warning should appear in stderr.
 		errOutput := stderr.String()
 		if !strings.Contains(errOutput, "warning: directory already registered as: first") {
 			t.Errorf("expected duplicate directory warning, got: %s", errOutput)
 		}
 	})
 
-	t.Run("reserved command name", func(t *testing.T) {
+	t.Run("wrong number of arguments", func(t *testing.T) {
+		resetFlags(t)
 		dbDir := t.TempDir()
 		dbPath := filepath.Join(dbDir, "database.json")
 		t.Setenv("TO_DB", dbPath)
 
-		targetDir := t.TempDir()
-
-		rootCmd.SetArgs([]string{"reg", "reg", targetDir})
+		rootCmd.SetArgs([]string{"--reg", "onlyalias"})
 
 		err := rootCmd.Execute()
 		if err == nil {
-			t.Fatal("expected error for reserved name, got nil")
+			t.Fatal("expected error for wrong arg count, got nil")
 		}
 
-		if !strings.Contains(err.Error(), "reserved command name") {
-			t.Errorf("expected 'reserved command name' error, got: %s", err.Error())
+		if !strings.Contains(err.Error(), "usage:") {
+			t.Errorf("expected usage hint in error, got: %s", err.Error())
 		}
 	})
 
 	t.Run("relative path resolution", func(t *testing.T) {
+		resetFlags(t)
 		dbDir := t.TempDir()
 		dbPath := filepath.Join(dbDir, "database.json")
 		t.Setenv("TO_DB", dbPath)
 
-		// Create a subdirectory to use as relative path target.
 		baseDir := t.TempDir()
 		subDir := filepath.Join(baseDir, "subdir")
 		if err := os.MkdirAll(subDir, 0o755); err != nil {
 			t.Fatalf("failed to create subdir: %v", err)
 		}
 
-		// Change working directory so relative path resolves correctly.
 		origDir, err := os.Getwd()
 		if err != nil {
 			t.Fatalf("failed to get cwd: %v", err)
@@ -183,7 +203,7 @@ func TestRegCommand(t *testing.T) {
 
 		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
-		rootCmd.SetArgs([]string{"reg", "reltest", "subdir"})
+		rootCmd.SetArgs([]string{"--reg", "reltest", "subdir"})
 
 		err = rootCmd.Execute()
 		if err != nil {
@@ -191,12 +211,34 @@ func TestRegCommand(t *testing.T) {
 		}
 
 		output := stdout.String()
-		// The output should contain the absolute path, not the relative one.
 		if !strings.Contains(output, subDir) {
 			t.Errorf("expected absolute path %s in output, got: %s", subDir, output)
 		}
 		if strings.Contains(output, "-> subdir\n") {
 			t.Errorf("expected relative path to be resolved, got: %s", output)
+		}
+	})
+
+	t.Run("alias named reg is allowed", func(t *testing.T) {
+		resetFlags(t)
+		dbDir := t.TempDir()
+		dbPath := filepath.Join(dbDir, "database.json")
+		t.Setenv("TO_DB", dbPath)
+
+		targetDir := t.TempDir()
+
+		var stdout bytes.Buffer
+		rootCmd.SetOut(&stdout)
+		rootCmd.SetArgs([]string{"--reg", "reg", targetDir})
+
+		err := rootCmd.Execute()
+		if err != nil {
+			t.Fatalf("expected alias 'reg' to be allowed, got: %v", err)
+		}
+
+		output := stdout.String()
+		if !strings.Contains(output, "registered 'reg'") {
+			t.Errorf("expected success message, got: %s", output)
 		}
 	})
 }

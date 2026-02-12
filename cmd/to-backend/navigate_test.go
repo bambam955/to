@@ -12,6 +12,7 @@ import (
 
 func TestNavigateCommand(t *testing.T) {
 	t.Run("successful navigation", func(t *testing.T) {
+		resetFlags(t)
 		tmpDir := t.TempDir()
 		dbPath := filepath.Join(tmpDir, "database.json")
 		targetDir := filepath.Join(tmpDir, "projects")
@@ -19,7 +20,6 @@ func TestNavigateCommand(t *testing.T) {
 			t.Fatalf("failed to create target dir: %v", err)
 		}
 
-		// Init database and add alias
 		db, err := database.InitDatabase(dbPath)
 		if err != nil {
 			t.Fatalf("failed to init database: %v", err)
@@ -50,10 +50,10 @@ func TestNavigateCommand(t *testing.T) {
 	})
 
 	t.Run("alias not found", func(t *testing.T) {
+		resetFlags(t)
 		tmpDir := t.TempDir()
 		dbPath := filepath.Join(tmpDir, "database.json")
 
-		// Init empty database
 		_, err := database.InitDatabase(dbPath)
 		if err != nil {
 			t.Fatalf("failed to init database: %v", err)
@@ -74,11 +74,11 @@ func TestNavigateCommand(t *testing.T) {
 	})
 
 	t.Run("directory no longer exists", func(t *testing.T) {
+		resetFlags(t)
 		tmpDir := t.TempDir()
 		dbPath := filepath.Join(tmpDir, "database.json")
 		targetDir := filepath.Join(tmpDir, "gone")
 
-		// Create directory, add alias, then remove directory
 		if err := os.MkdirAll(targetDir, 0o755); err != nil {
 			t.Fatalf("failed to create target dir: %v", err)
 		}
@@ -94,7 +94,6 @@ func TestNavigateCommand(t *testing.T) {
 			t.Fatalf("failed to save database: %v", err)
 		}
 
-		// Remove the directory
 		if err := os.RemoveAll(targetDir); err != nil {
 			t.Fatalf("failed to remove target dir: %v", err)
 		}
@@ -113,6 +112,20 @@ func TestNavigateCommand(t *testing.T) {
 		}
 		if !strings.Contains(err.Error(), targetDir) {
 			t.Errorf("expected error to contain directory path %q, got %q", targetDir, err.Error())
+		}
+	})
+
+	t.Run("no arguments", func(t *testing.T) {
+		resetFlags(t)
+		rootCmd.SetArgs([]string{})
+
+		err := rootCmd.Execute()
+		if err == nil {
+			t.Fatal("expected error for no arguments, got nil")
+		}
+
+		if !strings.Contains(err.Error(), "usage:") {
+			t.Errorf("expected usage hint in error, got %q", err.Error())
 		}
 	})
 }
