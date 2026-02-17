@@ -2,7 +2,7 @@
 
 # Display help information
 default:
-    @just --list
+    @just --list --unsorted
 
 # --------------- USER COMMANDS --------------- #
 
@@ -34,8 +34,8 @@ purge shell="bash": (uninstall shell)
 
 # --------------- DEV COMMANDS --------------- #
 
-# Development build (clean, fmt, lint, test, build)
-dev: clean fmt lint test build
+# Development build (clean, lint, fmt, test, build)
+dev: clean lint fmt test build
 
 # Run tests
 test:
