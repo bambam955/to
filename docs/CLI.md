@@ -38,26 +38,29 @@ Remove an alias from the database.
 ### List all aliases
 
 ```bash
-to list
+to --list
+to -l
 ```
 
-Display all registered aliases and their paths.
+Display all registered aliases and their paths in aligned columns, sorted alphabetically.
 
 ### Clean invalid aliases
 
 ```bash
-to clean
+to --clean
+to -c
 ```
 
-Remove aliases pointing to directories that no longer exist.
+Remove aliases pointing to directories that no longer exist. Shows each removed alias and a summary of how many were cleaned.
 
 ### Expand an alias
 
 ```bash
-to exp <alias>
+to --exp <alias>
+to -e <alias>
 ```
 
-Output the absolute path for an alias (useful for scripts).
+Output the absolute path for an alias (useful for scripts). Outputs only the path with no extra formatting.
 
 ## Error Handling
 

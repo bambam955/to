@@ -9,7 +9,13 @@ func resetFlags(t *testing.T) {
 	t.Cleanup(func() {
 		flagReg = false
 		flagUnreg = false
+		flagList = false
+		flagClean = false
+		flagExp = false
 	})
 	flagReg = false
 	flagUnreg = false
+	flagList = false
+	flagClean = false
+	flagExp = false
 }
