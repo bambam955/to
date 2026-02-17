@@ -58,7 +58,7 @@ clean:
 lint:
     go vet ./...
     @command -v shellcheck >/dev/null
-    shellcheck --enable=all --shell=bash wrappers/*.bash
+    shellcheck --enable=all --shell=bash wrappers/*.bash tests/**/*.bash tests/**/*.sh
 
 # Format all Go source code
 fmt:

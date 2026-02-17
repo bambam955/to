@@ -15,7 +15,7 @@ export TO_DB="${TEST_DB}"
 trap 'rm -f "${TEST_DB}"' EXIT
 
 # Source the wrapper
-# shellcheck source=../../wrappers/to.bash
+# shellcheck disable=SC1091
 source "${REPO_ROOT}/wrappers/to.bash"
 
 pass=0
@@ -40,18 +40,20 @@ echo "=== Bash wrapper integration tests ==="
 
 # Test 1: Navigation changes directory
 echo "Test 1: navigation changes PWD"
-start_dir="$PWD"
+start_dir="${PWD}"
 to tmp
-assert "PWD changed to /tmp" "/tmp" "$PWD"
+assert "PWD changed to /tmp" "/tmp" "${PWD}"
 cd "${start_dir}" || exit 1
 
 # Test 2: Non-navigation output is passed through
 echo "Test 2: list output passthrough"
 output=$(to --list)
+# shellcheck disable=SC2312
 assert "list contains tmp alias" "yes" "$(echo "${output}" | grep -q 'tmp' && echo yes || echo no)"
 
 # Test 3: Error preserves non-zero exit code
 echo "Test 3: error exit code preserved"
+# shellcheck disable=SC2310
 if to nonexistent 2>/dev/null; then
     assert "exit code non-zero" "1" "0"
 else
@@ -60,10 +62,10 @@ fi
 
 # Test 4: Expand shows path without triggering cd
 echo "Test 4: expand shows path without cd"
-start_dir="$PWD"
+start_dir="${PWD}"
 output=$(to --exp tmp)
 assert "exp output is /tmp" "/tmp" "${output}"
-assert "PWD unchanged" "${start_dir}" "$PWD"
+assert "PWD unchanged" "${start_dir}" "${PWD}"
 
 # Test 5: to function is exported
 echo "Test 5: function is exported"

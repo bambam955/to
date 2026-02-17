@@ -2,10 +2,11 @@
 
 ## Build & Test
 - Build: `just build` (or `go build -o bin/to-backend ./cmd/to-backend`)
-- Test all: `just test` (or `go test ./...`)
-- Test single package: `go test ./pkg/database/` — single test: `go test ./pkg/database/ -run TestName`
-- Lint: `just lint` (`go vet ./...` + `shellcheck --enable=all --shell=bash wrappers/*.bash`)
-- Format: `just fmt` (`gofmt -w .` + `shfmt -i 4 -w .`)
+- Unit tests: `just test-unit`
+  - Test single package: `go test ./pkg/database/` — single test: `go test ./pkg/database/ -run TestName`
+- Integration tests: `just test-integration`
+- Lint: `just lint`
+- Format: `just fmt`
 - Full dev cycle: `just dev` (clean → fmt → lint → test → build)
 
 ## Architecture
