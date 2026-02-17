@@ -1,6 +1,6 @@
 ---
 number: 4
-status: approved
+status: completed
 author: Bennett Moore
 creation_date: 2026-01-25
 approved_by: Bennett Moore
@@ -178,33 +178,33 @@ This spec defines the utility and management commands for the "to" tool: listing
 
 ### List Command
 
-- [ ] Define column-based output formatting
-- [ ] Design handling for long paths and alias names
-- [ ] Specify sorting and ordering behavior
-- [ ] Design error handling and display
+- [x] Define column-based output formatting
+- [x] Design handling for long paths and alias names
+- [x] Specify sorting and ordering behavior
+- [x] Design error handling and display
 
 ### Clean Command
 
-- [ ] Define directory validation logic for each alias
-- [ ] Design batch removal behavior
-- [ ] Specify progress reporting and user feedback
-- [ ] Design summary output for cleanup results
+- [x] Define directory validation logic for each alias
+- [x] Design batch removal behavior
+- [x] Specify progress reporting and user feedback
+- [x] Design summary output for cleanup results
 
 ### Expand Command
 
-- [ ] Define path-only output format
-- [ ] Design behavior for non-existent aliases
-- [ ] Specify exit code conventions
-- [ ] Design error handling and messaging
+- [x] Define path-only output format
+- [x] Design behavior for non-existent aliases
+- [x] Specify exit code conventions
+- [x] Design error handling and messaging
 
 ### Output Standards
 
-- [ ] Define consistent formatting principles across commands
-- [ ] Design error message standards using "error:" prefix
-- [ ] Specify clean formatting guidelines
+- [x] Define consistent formatting principles across commands
+- [x] Design error message standards using "error:" prefix
+- [x] Specify clean formatting guidelines
 
 ### User Experience
 
-- [ ] Define clear success and error feedback
-- [ ] Specify error recovery guidance
-- [ ] Design consistent interaction patterns
+- [x] Define clear success and error feedback
+- [x] Specify error recovery guidance
+- [x] Design consistent interaction patterns
