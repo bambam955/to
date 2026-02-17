@@ -26,14 +26,14 @@ repos:
     hooks:
       - id: shellcheck
         args: [--enable=all, --shell=bash]
-        files: ^shell/.*\.sh$
+        files: ^wrappers/.*\.bash$
   - repo: local
     hooks:
       - id: shfmt
         name: shfmt
         entry: shfmt -i 4 -w
         language: system
-        files: ^shell/.*\.sh$
+        files: ^wrappers/.*\.bash$
 
   - repo: https://github.com/specture-system/specture
     rev: v0.0.1

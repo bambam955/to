@@ -10,7 +10,7 @@ default:
 install shell="bash": build
     @mkdir -p ~/.local/bin
     cp bin/to-backend ~/.local/bin/to-backend
-    cp shell/to.{{ shell }} ~/.local/bin/
+    cp wrappers/to.{{ shell }} ~/.local/bin/
     @chmod +x ~/.local/bin/to-backend
     @echo "Add the following to your shell configuration:"
     @echo "  source ~/.local/bin/to.{{ shell }}"
@@ -50,7 +50,7 @@ clean:
 lint:
     go vet ./...
     @command -v shellcheck >/dev/null
-    shellcheck --enable=all --shell=bash shell/*.bash
+    shellcheck --enable=all --shell=bash wrappers/*.bash
 
 # Format all Go source code
 fmt:
