@@ -37,9 +37,16 @@ purge shell="bash": (uninstall shell)
 # Development build (clean, lint, fmt, test, build)
 dev: clean lint fmt test build
 
-# Run tests
-test:
+# Run all tests
+test: test-unit (test-integration "all")
+
+# Run unit tests
+test-unit:
     go test ./...
+
+# Run integration tests (shell = bash, zsh, fish, or all)
+test-integration shell="all": build
+    bash tests/integration/runner.sh {{ shell }}
 
 # Clean build artifacts
 clean:
@@ -50,7 +57,7 @@ clean:
 lint:
     go vet ./...
     @command -v shellcheck >/dev/null
-    shellcheck --enable=all --shell=bash wrappers/*.bash
+    shellcheck --enable=all --shell=bash wrappers/*.bash tests/**/*.bash tests/**/*.sh
 
 # Format all Go source code
 fmt:

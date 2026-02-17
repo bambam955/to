@@ -20,8 +20,7 @@ jobs:
 
       - uses: ludeeus/action-shellcheck@master
         with:
-          scandir: './wrappers'
-          ignore_paths: './wrappers/*.fish ./wrappers/*.zsh'
+          ignore_paths: './**/*.fish ./**/*.zsh'
         env:
           SHELLCHECK_OPTS: --enable=all --shell=bash
 
