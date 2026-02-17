@@ -1,40 +1,119 @@
 # to
 
-Go TO any directory instantly. A modern directory navigation tool with a Go backend and bash wrapper.
+**Go TO any directory instantly.** A lightweight CLI tool for bookmark-style directory navigation, built with Go and bash.
 
 ## Quick Start
 
 ```bash
 just install
 source ~/.local/bin/to.sh
-to reg work /path/to/work
-to work  # Changes directory instantly
+
+to --reg work ~/projects/work   # Register an alias
+to work                      # Jump there instantly
 ```
-
-See [CLI Reference](docs/CLI.md) for full command documentation.
-
-## Features
-
-- **Instant navigation**: Jump to registered directories with a single command
-- **Multiple aliases**: Register multiple names for the same directory
-- **Smart management**: List, clean, and expand aliases
-- **Simple protocol**: Clear error messages and straightforward communication
-- **XDG-compliant**: Configuration stored in `~/.config/to/`
 
 ## Installation
 
+### Prerequisites
+
+- **Go** 1.25+
+- **just** (command runner)
+- **bash** (or zsh)
+
+### Install
+
 ```bash
+git clone https://github.com/bambam955/to.git
+cd to
 just install
+```
+
+This builds the `to-backend` binary and copies it along with `to.sh` to `~/.local/bin/`. Make sure `~/.local/bin` is on your `PATH`.
+
+### Make it persistent
+
+Add this line to your `.bashrc` or `.zshrc`:
+
+```bash
 source ~/.local/bin/to.sh
 ```
 
-Add `source ~/.local/bin/to.sh` to your `.bashrc`, `.zshrc`, or shell config to make it persistent.
+## Usage
+
+| Action | Command | Short form |
+|---|---|---|
+| Navigate | `to <alias>` | — |
+| Register | `to --reg <alias> <path>` | `to -r <alias> <path>` |
+| Unregister | `to --unreg <alias>` | `to -u <alias>` |
+| List all | `to --list` | `to -l` |
+| Clean stale | `to --clean` | `to -c` |
+| Expand path | `to --exp <alias>` | `to -e <alias>` |
+
+### Examples
+
+```bash
+# Register aliases
+to -r proj ~/projects/myapp
+to -r docs ~/Documents
+
+# Navigate
+to proj                  # cd ~/projects/myapp
+to docs                  # cd ~/Documents
+
+# List all registered aliases
+to -l
+
+# Get the raw path (useful in scripts)
+cp file.txt "$(to -e proj)/src/"
+
+# Remove an alias
+to -u docs
+
+# Clean aliases pointing to deleted directories
+to -c
+```
+
+See [docs/CLI.md](docs/CLI.md) for the full CLI reference.
+
+## Configuration
+
+Alias data is stored in `~/.config/to/database.json` (XDG-compliant).
+
+Override the database location with the `TO_DB` environment variable:
+
+```bash
+export TO_DB=~/custom/path/database.json
+```
+
+## Architecture
+
+`to` uses a hybrid Go + bash design:
+
+- **`to-backend`** — A Go binary (using cobra) that resolves aliases, manages the database, and writes results to stdout.
+- **`to.sh`** — A bash function wrapper that calls `to-backend`, intercepts navigation responses, and performs the actual `cd`.
+
+This split exists because a subprocess cannot change the parent shell's working directory. The backend outputs a `[to] <path>` protocol line on successful navigation, which the shell wrapper parses to run `cd`.
 
 ## Development
 
 ```bash
 just build      # Build the binary
-just test       # Run tests
-just clean      # Clean build artifacts
-just help       # Show all commands
+just test       # Run all tests
+just fmt        # Format Go and shell code
+just lint       # go vet + shellcheck
+just dev        # Full cycle: clean → fmt → lint → test → build
+just upgrade    # Rebuild and reinstall
 ```
+
+## Uninstalling
+
+```bash
+just uninstall  # Remove binary and shell wrapper
+just purge      # Also remove ~/.config/to/ data
+```
+
+Remember to remove the `source ~/.local/bin/to.sh` line from your shell config.
+
+## License
+
+[MIT](LICENSE) — Bennett Moore

@@ -22,6 +22,16 @@ build:
 uninstall:
     @rm -f ~/.local/bin/to-backend
     @rm -f ~/.local/bin/to.sh
+    @echo "Remember to remove the following from your shell configuration (.bashrc, .zshrc, etc.):"
+    @echo "  source ~/.local/bin/to.sh"
+
+# Rebuild and reinstall both components
+upgrade: uninstall install
+
+# Uninstall and remove all configuration and data
+purge: uninstall
+    @echo "Warning: removing all configuration and data from ~/.config/to/"
+    @rm -rf ~/.config/to/
 
 # --------------- DEV COMMANDS --------------- #
 
