@@ -4,7 +4,7 @@
 
 ```bash
 just install
-source ~/.local/bin/to.sh
+source ~/.local/bin/to.bash
 ```
 
 ## Commands

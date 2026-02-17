@@ -11,7 +11,7 @@ const (
 	// BinaryName is the name of the Go backend binary
 	BinaryName = "to-backend"
 	// WrapperName is the name of the bash wrapper script
-	WrapperName = "to.sh"
+	WrapperName = "to.bash"
 	// TargetDir is the installation directory
 	TargetDir = ".local/bin"
 )
