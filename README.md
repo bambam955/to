@@ -6,7 +6,7 @@
 
 ```bash
 just install
-source ~/.local/bin/to.sh
+source ~/.local/bin/to.bash
 
 to --reg work ~/projects/work   # Register an alias
 to work                      # Jump there instantly
@@ -28,14 +28,14 @@ cd to
 just install
 ```
 
-This builds the `to-backend` binary and copies it along with `to.sh` to `~/.local/bin/`. Make sure `~/.local/bin` is on your `PATH`.
+This builds the `to-backend` binary and copies it along with `to.bash` to `~/.local/bin/`. Make sure `~/.local/bin` is on your `PATH`.
 
 ### Make it persistent
 
 Add this line to your `.bashrc` or `.zshrc`:
 
 ```bash
-source ~/.local/bin/to.sh
+source ~/.local/bin/bash
 ```
 
 ## Usage
@@ -90,7 +90,7 @@ export TO_DB=~/custom/path/database.json
 `to` uses a hybrid Go + bash design:
 
 - **`to-backend`** — A Go binary (using cobra) that resolves aliases, manages the database, and writes results to stdout.
-- **`to.sh`** — A bash function wrapper that calls `to-backend`, intercepts navigation responses, and performs the actual `cd`.
+- **`to.bash`** — A bash function wrapper that calls `to-backend`, intercepts navigation responses, and performs the actual `cd`.
 
 This split exists because a subprocess cannot change the parent shell's working directory. The backend outputs a `[to] <path>` protocol line on successful navigation, which the shell wrapper parses to run `cd`.
 
@@ -112,7 +112,7 @@ just uninstall  # Remove binary and shell wrapper
 just purge      # Also remove ~/.config/to/ data
 ```
 
-Remember to remove the `source ~/.local/bin/to.sh` line from your shell config.
+Remember to remove the `source ~/.local/bin/to.bash` line from your shell config.
 
 ## License
 

@@ -7,29 +7,29 @@ default:
 # --------------- USER COMMANDS --------------- #
 
 # Install the backend and wrapper to the local bin dir
-install: build
+install shell="bash": build
     @mkdir -p ~/.local/bin
-    cp -t ~/.local/bin/ bin/to-backend shell/to.sh
-    @chmod +x ~/.local/bin/to-backend ~/.local/bin/to.sh
-    @echo "Add the following to your shell configuration (.bashrc, .zshrc, etc.):"
-    @echo "  source ~/.local/bin/to.sh"
+    cp bin/to-backend ~/.local/bin/to-backend
+    cp shell/to.{{ shell }} ~/.local/bin/
+    @chmod +x ~/.local/bin/to-backend
+    @echo "Add the following to your shell configuration:"
+    @echo "  "source ~/.local/bin/to.{{ shell }}"
 
 # Build the Go backend binary
 build:
     go build -o bin/to-backend ./cmd/to-backend
 
 # Uninstall both components
-uninstall:
+uninstall shell="bash":
     @rm -f ~/.local/bin/to-backend
-    @rm -f ~/.local/bin/to.sh
-    @echo "Remember to remove the following from your shell configuration (.bashrc, .zshrc, etc.):"
-    @echo "  source ~/.local/bin/to.sh"
+    @rm -f ~/.local/bin/to.{{ shell }}
+    @echo "Remember to remove the source line from your shell configuration."
 
 # Rebuild and reinstall both components
-upgrade: uninstall install
+upgrade shell="bash": (uninstall shell) (install shell)
 
 # Uninstall and remove all configuration and data
-purge: uninstall
+purge shell="bash": (uninstall shell)
     @echo "Warning: removing all configuration and data from ~/.config/to/"
     @rm -rf ~/.config/to/
 
@@ -51,7 +51,7 @@ clean:
 lint:
     go vet ./...
     @command -v shellcheck >/dev/null
-    shellcheck --enable=all --shell=bash shell/*
+    shellcheck --enable=all --shell=bash shell/*.sh
 
 # Format all Go source code
 fmt:

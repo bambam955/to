@@ -10,7 +10,7 @@
 
 ## Architecture
 Go CLI tool (`to`) for instant directory navigation. Two-part design:
-- **`shell/to.sh`**: Bash wrapper that calls the backend and performs `cd` (shell can't change its own cwd from a subprocess).
+- **`shell/to.bash`**: Bash wrapper that calls the backend and performs `cd` (shell can't change its own cwd from a subprocess).
 - **`cmd/to-backend/`**: Go binary (cobra CLI) — the backend that resolves aliases.
 - **`pkg/`**: Core packages — `config/` (XDG paths), `database/` (JSON alias store), `errors/` (typed errors with `ErrorType`), `protocol/` (stdout `[to] <path>` format parsed by shell wrapper), `install/`.
 - Config/data stored in `~/.config/to/` (XDG-compliant).
