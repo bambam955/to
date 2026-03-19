@@ -89,7 +89,7 @@ This requires two pieces:
 
 ### GitHub Release Workflow
 
-- [ ] Create `.github/workflows/release.yml` triggered on `v*` tags
+- [ ] Create `.github/workflows/release.yml` triggered on `*.*.*` tags
 - [ ] Cross-compile `to-backend` for `linux/amd64` and `linux/arm64`
 - [ ] Package each build into a tarball: `to-<version>-linux-<arch>.tar.gz` containing `to-backend`, `to.bash`, `to.zsh`, `to.fish`
 - [ ] Generate SHA-256 checksums file (`checksums.txt`)
