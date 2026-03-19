@@ -3,6 +3,8 @@ number: 5
 status: draft
 author: Bennett Moore
 creation_date: 2026-02-17
+approved_by: Bennett Moore
+approval_date: 2026-03-19
 ---
 
 # Curl Installer Script

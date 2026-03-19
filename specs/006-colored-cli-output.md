@@ -3,6 +3,8 @@ number: 6
 status: draft
 author: Bennett Moore
 creation_date: 2026-03-19
+approved_by: Bennett Moore
+approval_date: 2026-03-19
 ---
 
 # Colored CLI Output
