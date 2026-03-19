@@ -53,7 +53,7 @@ This requires two pieces:
 
 ### Release Workflow: GitHub Actions
 
-- Chosen: GitHub Actions workflow triggered on version tags (`v*`)
+- Chosen: GitHub Actions workflow triggered on semantic version tags (`*.*.*`, e.g. `1.2.3`)
   - Already using GitHub Actions for CI
   - Native integration with GitHub Releases
   - Uses `GOARCH` cross-compilation (no CGo, so cross-compiling is trivial)
@@ -67,7 +67,8 @@ This requires two pieces:
   - XDG-compliant, no sudo required
   - Matches the existing install target so curl-installed and locally-built installs are interchangeable
 - Considered: Configurable via environment variable
-  - Added complexity, can be added later if needed
+  - Installed path is overridden via `TO_INSTALL_DIR` (default: `$HOME/.local/bin`)
+  - Value is resolved to a directory path and may be relative to current working directory or absolute
 
 ### Shell Wrapper Detection
 
@@ -85,6 +86,14 @@ This requires two pieces:
 - Considered: No checksum verification
   - Simpler but insecure for a curl-pipe-bash installer
 
+### Version Pinning
+
+- Chosen: Support `TO_INSTALL_VERSION` to pin a specific release.
+  - Supports reproducible installs for automation and air-gapped/controlled environments.
+  - If unset, installer defaults to fetching the latest release.
+- Considered: Hardcoded latest-only behavior
+  - Simpler but prevents reproducible installs and rollback workflows.
+
 ## Task List
 
 ### GitHub Release Workflow
@@ -100,10 +109,19 @@ This requires two pieces:
 - [ ] Create `install.sh` at the repo root (POSIX shell, `#!/bin/sh`)
 - [ ] Detect OS (Linux only initially; error on unsupported)
 - [ ] Detect architecture (`x86_64` → `amd64`, `aarch64`/`arm64` → `arm64`)
-- [ ] Fetch latest release version from GitHub API (`/repos/bambam955/to/releases/latest`)
+- [ ] Determine target version:
+  - Use `TO_INSTALL_VERSION` if set
+  - Otherwise fetch latest release version from GitHub API (`/repos/bambam955/to/releases/latest`)
+- [ ] Validate `TO_INSTALL_VERSION` if set:
+  - Value must match an exact tag present in GitHub releases (e.g. `1.2.3`)
+  - Fail with a clear error when unresolved/invalid
 - [ ] Download the correct tarball and checksums file to a temp directory
 - [ ] Verify SHA-256 checksum before extracting
-- [ ] Extract tarball and install `to-backend` + shell wrappers to `~/.local/bin/`
+- [ ] Resolve and validate install directory:
+  - `TO_INSTALL_DIR` default is `$HOME/.local/bin`
+  - Accept both relative and absolute values, resolved to an absolute path before use
+  - Fail with a clear error for non-directory/uncreatable paths
+- [ ] Extract tarball and install `to-backend` + shell wrappers to resolved install directory
 - [ ] Print post-install instructions (which `source` line to add based on `$SHELL`)
 
 ### Documentation and Testing
