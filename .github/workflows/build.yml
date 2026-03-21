@@ -14,6 +14,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: '1.25'
+          cache-dependency-path: src/backend/go.sum
 
       - name: Build binary
         run: cd src/backend && go build -o ../../bin/to-backend ./cmd
