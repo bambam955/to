@@ -1,9 +1,9 @@
 # AGENTS.md
 
 ## Build & Test
-- Build: `just build` (or `go build -o bin/to-backend ./cmd/to-backend`)
+- Build: `just build` (or `cd src/backend && go build -o ../bin/to-backend ./cmd`)
 - Unit tests: `just test-unit`
-  - Test single package: `go test ./pkg/database/` — single test: `go test ./pkg/database/ -run TestName`
+  - Test single package: `cd src/backend && go test ./pkg/database/` — single test: `cd src/backend && go test ./pkg/database/ -run TestName`
 - Integration tests: `just test-integration`
 - Lint: `just lint`
 - Format: `just fmt`
@@ -11,9 +11,9 @@
 
 ## Architecture
 Go CLI tool (`to`) for instant directory navigation. Two-part design:
-- **`wrappers/to.bash`**: Bash wrapper that calls the backend and performs `cd` (shell can't change its own cwd from a subprocess).
-- **`cmd/to-backend/`**: Go binary (cobra CLI) — the backend that resolves aliases.
-- **`pkg/`**: Core packages — `config/` (XDG paths), `database/` (JSON alias store), `errors/` (typed errors with `ErrorType`), `protocol/` (stdout `[to] <path>` format parsed by shell wrapper), `install/`.
+- **`src/wrappers/to.bash`**: Bash wrapper that calls the backend and performs `cd` (shell can't change its own cwd from a subprocess).
+- **`src/backend/cmd/`**: Go binary (cobra CLI) — the backend that resolves aliases.
+- **`src/backend/pkg/`**: Core packages — `config/` (XDG paths), `database/` (JSON alias store), `errors/` (typed errors with `ErrorType`), `protocol/` (stdout `[to] <path>` format parsed by shell wrapper), `install/`.
 - Config/data stored in `~/.config/to/` (XDG-compliant).
 
 ## Code Style

@@ -10,14 +10,14 @@ default:
 install shell="bash": build
     @mkdir -p ~/.local/bin
     cp bin/to-backend ~/.local/bin/to-backend
-    cp wrappers/to.{{ shell }} ~/.local/bin/
+    cp src/wrappers/to.{{ shell }} ~/.local/bin/
     @chmod +x ~/.local/bin/to-backend
     @echo "Add the following to your shell configuration:"
     @echo "  source ~/.local/bin/to.{{ shell }}"
 
 # Build the Go backend binary
 build:
-    go build -o bin/to-backend ./cmd/to-backend
+    cd src/backend && go build -o ../../bin/to-backend ./cmd
 
 # Uninstall both components
 uninstall shell="bash":
@@ -42,7 +42,7 @@ test: test-unit (test-integration "all")
 
 # Run unit tests
 test-unit:
-    go test ./...
+    cd src/backend && go test -race ./...
 
 # Run integration tests (shell = bash, zsh, fish, or all)
 test-integration shell="all": build
@@ -55,11 +55,11 @@ clean:
 
 # Lint all source code
 lint:
-    go vet ./...
+    cd src/backend && go vet ./...
     @command -v shellcheck >/dev/null
-    shellcheck --enable=all --shell=bash wrappers/*.bash tests/**/*.bash tests/**/*.sh
+    shellcheck --enable=all --shell=bash src/wrappers/*.bash tests/**/*.bash tests/**/*.sh
 
 # Format all Go source code
 fmt:
-    gofmt -w .
+    cd src/backend && gofmt -w .
     shfmt -i 4 -w .

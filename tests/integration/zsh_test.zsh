@@ -1,5 +1,5 @@
 #!/bin/zsh
-# Integration tests for the zsh wrapper (wrappers/to.zsh)
+# Integration tests for the zsh wrapper (src/wrappers/to.zsh)
 set -euo pipefail
 
 SCRIPT_DIR="${0:a:h}"
@@ -15,7 +15,7 @@ export TO_DB="${TEST_DB}"
 trap 'rm -f "${TEST_DB}"' EXIT
 
 # Source the wrapper
-source "${REPO_ROOT}/wrappers/to.zsh"
+source "${REPO_ROOT}/src/wrappers/to.zsh"
 
 pass=0
 fail=0

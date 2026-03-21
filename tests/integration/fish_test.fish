@@ -1,5 +1,5 @@
 #!/usr/bin/env fish
-# Integration tests for the fish wrapper (wrappers/to.fish)
+# Integration tests for the fish wrapper (src/wrappers/to.fish)
 
 set SCRIPT_DIR (status dirname)
 set REPO_ROOT "$SCRIPT_DIR/../.."
@@ -12,7 +12,7 @@ set -x TO_DB (mktemp)
 cp "$SCRIPT_DIR/testdata/database.json" "$TO_DB"
 
 # Source the wrapper
-source "$REPO_ROOT/wrappers/to.fish"
+source "$REPO_ROOT/src/wrappers/to.fish"
 
 set pass 0
 set fail 0

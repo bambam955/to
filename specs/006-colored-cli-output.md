@@ -68,29 +68,29 @@ This must not break machine-facing behavior (especially protocol output consumed
   - shared theme constants (error/success/warn/help/list styles)
   - helper methods for `Sprintf`-style styling that become no-ops when color is disabled
   - color enablement detection via TTY checks
-- [ ] Add unit tests for theme resolution and TTY-based enablement in `cmd/to-backend` style helper tests.
+- [ ] Add unit tests for theme resolution and TTY-based enablement in `cmd` style helper tests.
 
 ### Root/help output
 
-- [ ] Update `cmd/to-backend/root.go` to pass the shared formatter into Cobra.
+- [ ] Update `cmd/root.go` to pass the shared formatter into Cobra.
 - [ ] Configure Cobra usage/help template to apply style to:
   - usage lines
   - short/long descriptions
   - example blocks
   - flag sections
-- [ ] Add tests in `cmd/to-backend/*_test.go` to verify generated help is styled when output is a TTY and unstyled otherwise.
+- [ ] Add tests in `cmd/*_test.go` to verify generated help is styled when output is a TTY and unstyled otherwise.
 
 ### Errors
 
 - [ ] Route command-level errors through the formatter helper so they get consistent color treatment.
 - [ ] Keep protocol-style error strings compatible; error outputs intended for the wrapper must remain parseable.
-- [ ] Add tests in `cmd/to-backend/*_test.go` for:
+- [ ] Add tests in `cmd/*_test.go` for:
   - colored error output when output is a TTY
   - uncolored errors when output is non-TTY.
 
 ### List output
 
-- [ ] Update `cmd/to-backend/list.go` to colorize:
+- [ ] Update `cmd/list.go` to colorize:
   - headers or list context
   - alias names
   - directory path output
