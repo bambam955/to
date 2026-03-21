@@ -1,5 +1,5 @@
 #!/bin/bash
-# Integration tests for the bash wrapper (wrappers/to.bash)
+# Integration tests for the bash wrapper (src/wrappers/to.bash)
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -16,7 +16,7 @@ trap 'rm -f "${TEST_DB}"' EXIT
 
 # Source the wrapper
 # shellcheck disable=SC1091
-source "${REPO_ROOT}/wrappers/to.bash"
+source "${REPO_ROOT}/src/wrappers/to.bash"
 
 pass=0
 fail=0
