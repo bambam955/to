@@ -1,6 +1,6 @@
 ---
 number: 5
-status: draft
+status: approved
 author: Bennett Moore
 creation_date: 2026-02-17
 approved_by: Bennett Moore
