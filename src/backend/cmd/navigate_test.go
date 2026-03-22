@@ -47,6 +47,9 @@ func TestNavigateCommand(t *testing.T) {
 		if !strings.Contains(output, expected) {
 			t.Errorf("expected output to contain %q, got %q", expected, output)
 		}
+		if containsANSI(output) {
+			t.Errorf("expected navigation protocol output to contain no ANSI escapes, got %q", output)
+		}
 	})
 
 	t.Run("alias not found", func(t *testing.T) {

@@ -75,6 +75,26 @@ to -c
 
 See [docs/CLI.md](docs/CLI.md) for the full CLI reference.
 
+### Color Output
+
+`to` applies ANSI colors automatically when output is connected to an interactive terminal (TTY), including:
+
+- help/usage text
+- list output (`to --list`)
+- warnings, success messages, and errors
+
+When output is redirected or piped, color is disabled automatically so output remains plain text.
+
+```bash
+# Interactive terminal: colored output
+to --help
+to --list
+
+# Non-interactive: plain output (no ANSI escapes)
+to --list | cat
+to --help > help.txt
+```
+
 ## Configuration
 
 Alias data is stored in `~/.config/to/database.json` (XDG-compliant).

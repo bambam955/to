@@ -30,6 +30,9 @@ func loadOrInitDB(dbPath string) (*database.Database, error) {
 // warns on duplicate directories (different alias pointing to the same dir),
 // and rejects duplicate alias names or invalid inputs.
 func runReg(cmd *cobra.Command, args []string) error {
+	outFormatter := formatterForOutput(cmd)
+	errFormatter := formatterForError(cmd)
+
 	if len(args) != 2 {
 		return fmt.Errorf("usage: to --reg <alias> <directory>")
 	}
@@ -62,7 +65,8 @@ func runReg(cmd *cobra.Command, args []string) error {
 		for i, a := range existing {
 			names[i] = a.Name
 		}
-		fmt.Fprintf(cmd.ErrOrStderr(), "warning: directory already registered as: %s\n", strings.Join(names, ", "))
+		message := fmt.Sprintf("warning: directory already registered as: %s", strings.Join(names, ", "))
+		fmt.Fprintln(cmd.ErrOrStderr(), errFormatter.Warning(message))
 	}
 
 	// Add the alias (validates name, directory, and checks duplicate names).
@@ -75,6 +79,6 @@ func runReg(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	fmt.Fprintf(cmd.OutOrStdout(), "registered '%s' -> %s\n", name, absDir)
+	fmt.Fprintln(cmd.OutOrStdout(), outFormatter.Success(fmt.Sprintf("registered '%s' -> %s", name, absDir)))
 	return nil
 }

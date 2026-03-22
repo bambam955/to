@@ -9,6 +9,8 @@ import (
 )
 
 func runClean(cmd *cobra.Command, args []string) error {
+	formatter := formatterForOutput(cmd)
+
 	dbPath, err := config.GetDatabasePath()
 	if err != nil {
 		return err
@@ -22,7 +24,7 @@ func runClean(cmd *cobra.Command, args []string) error {
 	removed := db.CleanInvalid()
 
 	if len(removed) == 0 {
-		fmt.Fprintln(cmd.OutOrStdout(), "no invalid aliases found")
+		fmt.Fprintln(cmd.OutOrStdout(), formatter.ListLabel("no invalid aliases found"))
 		return nil
 	}
 
@@ -31,9 +33,13 @@ func runClean(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, a := range removed {
-		fmt.Fprintf(cmd.OutOrStdout(), "removed '%s' -> %s\n", a.Name, a.Directory)
+		fmt.Fprintln(
+			cmd.OutOrStdout(),
+			formatter.Warning(fmt.Sprintf("removed '%s' -> %s", a.Name, a.Directory)),
+		)
 	}
 
-	fmt.Fprintf(cmd.OutOrStdout(), "cleaned %d alias(es), %d remaining\n", len(removed), len(db.ListAliases()))
+	summary := fmt.Sprintf("cleaned %d alias(es), %d remaining", len(removed), len(db.ListAliases()))
+	fmt.Fprintln(cmd.OutOrStdout(), formatter.Success(summary))
 	return nil
 }

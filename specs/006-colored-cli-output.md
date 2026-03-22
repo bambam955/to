@@ -1,6 +1,6 @@
 ---
 number: 6
-status: in-progress
+status: completed
 author: Bennett Moore
 creation_date: 2026-03-19
 approved_by: Bennett Moore
@@ -64,46 +64,46 @@ This must not break machine-facing behavior (especially protocol output consumed
 
 ### Core format layer
 
-- [ ] Add a small command-layer style helper (no new `pkg/ui` package) that wraps `github.com/fatih/color`:
+- [x] Add a small command-layer style helper (no new `pkg/ui` package) that wraps `github.com/fatih/color`:
   - shared theme constants (error/success/warn/help/list styles)
   - helper methods for `Sprintf`-style styling that become no-ops when color is disabled
   - color enablement detection via TTY checks
-- [ ] Add unit tests for theme resolution and TTY-based enablement in `cmd` style helper tests.
+- [x] Add unit tests for theme resolution and TTY-based enablement in `cmd` style helper tests.
 
 ### Root/help output
 
-- [ ] Update `cmd/root.go` to pass the shared formatter into Cobra.
-- [ ] Configure Cobra usage/help template to apply style to:
+- [x] Update `cmd/root.go` to pass the shared formatter into Cobra.
+- [x] Configure Cobra usage/help template to apply style to:
   - usage lines
   - short/long descriptions
   - example blocks
   - flag sections
-- [ ] Add tests in `cmd/*_test.go` to verify generated help is styled when output is a TTY and unstyled otherwise.
+- [x] Add tests in `cmd/*_test.go` to verify generated help is styled when output is a TTY and unstyled otherwise.
 
 ### Errors
 
-- [ ] Route command-level errors through the formatter helper so they get consistent color treatment.
-- [ ] Keep protocol-style error strings compatible; error outputs intended for the wrapper must remain parseable.
-- [ ] Add tests in `cmd/*_test.go` for:
+- [x] Route command-level errors through the formatter helper so they get consistent color treatment.
+- [x] Keep protocol-style error strings compatible; error outputs intended for the wrapper must remain parseable.
+- [x] Add tests in `cmd/*_test.go` for:
   - colored error output when output is a TTY
   - uncolored errors when output is non-TTY.
 
 ### List output
 
-- [ ] Update `cmd/list.go` to colorize:
+- [x] Update `cmd/list.go` to colorize:
   - headers or list context
   - alias names
   - directory path output
-- [ ] Ensure list formatting remains stable so existing tests can assert token positions where expected.
-- [ ] Add or update list tests to cover TTY and non-TTY snapshots.
+- [x] Ensure list formatting remains stable so existing tests can assert token positions where expected.
+- [x] Add or update list tests to cover TTY and non-TTY snapshots.
 
 ### Protocol safety
 
-- [ ] Audit `pkg/protocol` and commands that emit path-only output (`navigate`, `exp`, etc.) and ensure those outputs stay unstyled.
-- [ ] Add regression tests for protocol path outputs to guarantee no ANSI escapes appear in wrapper-consumed output.
+- [x] Audit `pkg/protocol` and commands that emit path-only output (`navigate`, `exp`, etc.) and ensure those outputs stay unstyled.
+- [x] Add regression tests for protocol path outputs to guarantee no ANSI escapes appear in wrapper-consumed output.
 
 ### Docs and defaults
 
-- [ ] Update README with color behavior and examples:
+- [x] Update README with color behavior and examples:
   - colors appear on interactive terminals
   - no colors for non-TTY output.

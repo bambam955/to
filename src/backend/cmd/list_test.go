@@ -164,4 +164,95 @@ func TestListCommand(t *testing.T) {
 			t.Errorf("expected 'no aliases registered', got: %s", output)
 		}
 	})
+
+	t.Run("tty output is colorized", func(t *testing.T) {
+		resetFlags(t)
+		forceTTYDetection(t, true)
+
+		tmpDir := t.TempDir()
+		dbPath := filepath.Join(tmpDir, "database.json")
+		t.Setenv("TO_DB", dbPath)
+
+		dirA := t.TempDir()
+		dirB := t.TempDir()
+
+		db, err := database.InitDatabase(dbPath)
+		if err != nil {
+			t.Fatalf("failed to init database: %v", err)
+		}
+		if err := db.AddAlias("alpha", dirA); err != nil {
+			t.Fatalf("failed to add alias: %v", err)
+		}
+		if err := db.AddAlias("bravo", dirB); err != nil {
+			t.Fatalf("failed to add alias: %v", err)
+		}
+		if err := db.Save(dbPath); err != nil {
+			t.Fatalf("failed to save database: %v", err)
+		}
+
+		stdout := &testTTYBuffer{fd: 1}
+		rootCmd.SetOut(stdout)
+		rootCmd.SetArgs([]string{"--list"})
+
+		err = rootCmd.Execute()
+		if err != nil {
+			t.Fatalf("expected no error, got: %v", err)
+		}
+
+		output := stdout.String()
+		if !containsANSI(output) {
+			t.Fatalf("expected ANSI-styled output for TTY list output, got: %q", output)
+		}
+		if !strings.Contains(output, "alpha") || !strings.Contains(output, "bravo") {
+			t.Fatalf("expected aliases in output, got: %q", output)
+		}
+	})
+
+	t.Run("non-tty output snapshot remains plain", func(t *testing.T) {
+		resetFlags(t)
+		forceTTYDetection(t, true)
+
+		tmpDir := t.TempDir()
+		dbPath := filepath.Join(tmpDir, "database.json")
+		t.Setenv("TO_DB", dbPath)
+
+		dirA := t.TempDir()
+		dirB := t.TempDir()
+
+		db, err := database.InitDatabase(dbPath)
+		if err != nil {
+			t.Fatalf("failed to init database: %v", err)
+		}
+		if err := db.AddAlias("alpha", dirA); err != nil {
+			t.Fatalf("failed to add alias: %v", err)
+		}
+		if err := db.AddAlias("bravo", dirB); err != nil {
+			t.Fatalf("failed to add alias: %v", err)
+		}
+		if err := db.Save(dbPath); err != nil {
+			t.Fatalf("failed to save database: %v", err)
+		}
+
+		var stdout bytes.Buffer
+		rootCmd.SetOut(&stdout)
+		rootCmd.SetArgs([]string{"--list"})
+
+		err = rootCmd.Execute()
+		if err != nil {
+			t.Fatalf("expected no error, got: %v", err)
+		}
+
+		output := strings.TrimSpace(stdout.String())
+		if containsANSI(output) {
+			t.Fatalf("expected plain output for non-TTY list output, got: %q", output)
+		}
+
+		expected := strings.Join([]string{
+			"alpha  " + dirA,
+			"bravo  " + dirB,
+		}, "\n")
+		if output != expected {
+			t.Fatalf("unexpected list snapshot:\nexpected:\n%s\n\ngot:\n%s", expected, output)
+		}
+	})
 }

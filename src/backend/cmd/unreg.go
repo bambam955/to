@@ -11,6 +11,8 @@ import (
 // runUnreg removes an alias from the database. Returns an error if the
 // alias does not exist.
 func runUnreg(cmd *cobra.Command, args []string) error {
+	formatter := formatterForOutput(cmd)
+
 	if len(args) != 1 {
 		return fmt.Errorf("usage: to --unreg <alias>")
 	}
@@ -35,6 +37,6 @@ func runUnreg(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	fmt.Fprintf(cmd.OutOrStdout(), "unregistered '%s'\n", name)
+	fmt.Fprintln(cmd.OutOrStdout(), formatter.Success(fmt.Sprintf("unregistered '%s'", name)))
 	return nil
 }

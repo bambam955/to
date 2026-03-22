@@ -10,6 +10,8 @@ import (
 )
 
 func runList(cmd *cobra.Command, args []string) error {
+	formatter := formatterForOutput(cmd)
+
 	dbPath, err := config.GetDatabasePath()
 	if err != nil {
 		return err
@@ -22,7 +24,7 @@ func runList(cmd *cobra.Command, args []string) error {
 
 	aliases := db.ListAliases()
 	if len(aliases) == 0 {
-		fmt.Fprintln(cmd.OutOrStdout(), "no aliases registered")
+		fmt.Fprintln(cmd.OutOrStdout(), formatter.ListLabel("no aliases registered"))
 		return nil
 	}
 
@@ -40,7 +42,14 @@ func runList(cmd *cobra.Command, args []string) error {
 	}
 
 	for _, a := range aliases {
-		fmt.Fprintf(cmd.OutOrStdout(), "%-*s  %s\n", maxLen, a.Name, a.Directory)
+		// Pad before styling so visual alignment remains stable in terminals.
+		aliasColumn := fmt.Sprintf("%-*s", maxLen, a.Name)
+		fmt.Fprintf(
+			cmd.OutOrStdout(),
+			"%s  %s\n",
+			formatter.ListAlias(aliasColumn),
+			formatter.ListPath(a.Directory),
+		)
 	}
 
 	return nil
