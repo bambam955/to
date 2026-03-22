@@ -41,6 +41,9 @@ func TestExpCommand(t *testing.T) {
 		if output != targetDir {
 			t.Errorf("expected %q, got %q", targetDir, output)
 		}
+		if containsANSI(output) {
+			t.Errorf("expected expand output to contain no ANSI escapes, got %q", output)
+		}
 	})
 
 	t.Run("alias not found", func(t *testing.T) {
@@ -112,6 +115,9 @@ func TestExpCommand(t *testing.T) {
 		// Should be just the path with a newline, nothing else.
 		if output != targetDir+"\n" {
 			t.Errorf("expected exactly %q, got %q", targetDir+"\n", output)
+		}
+		if containsANSI(output) {
+			t.Errorf("expected expand output to contain no ANSI escapes, got %q", output)
 		}
 	})
 }

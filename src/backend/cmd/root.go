@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
+	"to/pkg/protocol"
 )
 
 // Operation-mode flags select which action to perform. At most one should
@@ -35,7 +37,37 @@ var rootCmd = &cobra.Command{
 	RunE:          run,
 }
 
+// styledHelpTemplate keeps Cobra help output readable in interactive terminals
+// while preserving plain output for non-TTY destinations.
+const styledHelpTemplate = `{{with (or .Long .Short)}}{{toHelpText $ .}}{{"\n\n"}}{{end}}` +
+	`{{if or .Runnable .HasSubCommands}}{{toHelpLabel . "Usage:"}}{{"\n  "}}{{toHelpText . .UseLine}}{{"\n"}}{{end}}` +
+	`{{if .HasAvailableSubCommands}}{{"\n"}}{{toHelpLabel . "Available Commands:"}}{{"\n"}}{{range .Commands}}{{if (or .IsAvailableCommand (eq .Name "help"))}}{{"  "}}{{toHelpText $ (rpad .Name .NamePadding)}} {{toHelpText $ .Short}}{{"\n"}}{{end}}{{end}}{{end}}` +
+	`{{if .HasAvailableLocalFlags}}{{"\n"}}{{toHelpLabel . "Flags:"}}{{"\n"}}{{.LocalFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}` +
+	`{{if .HasAvailableInheritedFlags}}{{"\n"}}{{toHelpLabel . "Global Flags:"}}{{"\n"}}{{.InheritedFlags.FlagUsages | trimTrailingWhitespaces}}{{end}}` +
+	`{{if .HasExample}}{{"\n\n"}}{{toHelpLabel . "Examples:"}}{{"\n"}}{{toHelpExample . .Example}}{{"\n"}}{{end}}` +
+	`{{if .HasHelpSubCommands}}{{"\n"}}{{toHelpLabel . "Additional help topics:"}}{{"\n"}}{{range .Commands}}{{if .IsAdditionalHelpTopicCommand}}{{"  "}}{{toHelpText $ (rpad .CommandPath .CommandPathPadding)}} {{toHelpText $ .Short}}{{"\n"}}{{end}}{{end}}{{end}}` +
+	`{{if .HasAvailableSubCommands}}{{"\n"}}{{toHelpText . (printf "Use \"%s [command] --help\" for more information about a command." .CommandPath)}}{{end}}{{"\n"}}`
+
 func init() {
+	// Register template functions once; each call resolves styles from the
+	// command's active output stream so TTY/non-TTY behavior stays correct.
+	cobra.AddTemplateFunc("toHelpLabel", func(cmd *cobra.Command, text string) string {
+		return formatterForOutput(cmd).HelpLabel(text)
+	})
+	cobra.AddTemplateFunc("toHelpText", func(cmd *cobra.Command, text string) string {
+		return formatterForOutput(cmd).HelpText(text)
+	})
+	cobra.AddTemplateFunc("toHelpExample", func(cmd *cobra.Command, text string) string {
+		lines := strings.Split(strings.TrimRight(text, "\n"), "\n")
+		formatter := formatterForOutput(cmd)
+		for i := range lines {
+			lines[i] = formatter.Example(lines[i])
+		}
+		return strings.Join(lines, "\n")
+	})
+
+	rootCmd.SetHelpTemplate(styledHelpTemplate)
+
 	rootCmd.Flags().BoolVarP(&flagReg, "reg", "r", false, "Register a new alias: to --reg <alias> <directory>")
 	rootCmd.Flags().BoolVarP(&flagUnreg, "unreg", "u", false, "Unregister an alias: to --unreg <alias>")
 	rootCmd.Flags().BoolVarP(&flagList, "list", "l", false, "List all registered aliases")
@@ -67,7 +99,14 @@ func run(cmd *cobra.Command, args []string) error {
 // to stderr and exits with code 1.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Fprintf(os.Stderr, "error: %s\n", err)
+		formatter := newCLIFormatterForWriter(os.Stderr)
+		fmt.Fprintln(os.Stderr, formatCommandError(err, formatter))
 		os.Exit(1)
 	}
+}
+
+// formatCommandError ensures all command-level errors keep the same
+// "error: ..." shape while applying terminal styling when enabled.
+func formatCommandError(err error, formatter *cliFormatter) string {
+	return formatter.Error(protocol.ErrorResponse(err.Error()))
 }

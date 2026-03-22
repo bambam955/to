@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -32,6 +33,11 @@ func TestNavigateCommand(t *testing.T) {
 		}
 
 		t.Setenv("TO_DB", dbPath)
+		var emittedPath string
+		stubNavigationControlWriter(t, func(path string) error {
+			emittedPath = path
+			return nil
+		})
 
 		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
@@ -42,10 +48,13 @@ func TestNavigateCommand(t *testing.T) {
 			t.Fatalf("expected no error, got: %v", err)
 		}
 
+		if emittedPath != targetDir {
+			t.Errorf("expected control channel path %q, got %q", targetDir, emittedPath)
+		}
+
 		output := stdout.String()
-		expected := "[to] " + targetDir
-		if !strings.Contains(output, expected) {
-			t.Errorf("expected output to contain %q, got %q", expected, output)
+		if output != "" {
+			t.Errorf("expected no stdout output for navigation, got %q", output)
 		}
 	})
 
@@ -126,6 +135,42 @@ func TestNavigateCommand(t *testing.T) {
 
 		if !strings.Contains(err.Error(), "usage:") {
 			t.Errorf("expected usage hint in error, got %q", err.Error())
+		}
+	})
+
+	t.Run("returns error when control channel is unavailable", func(t *testing.T) {
+		resetFlags(t)
+		tmpDir := t.TempDir()
+		dbPath := filepath.Join(tmpDir, "database.json")
+		targetDir := filepath.Join(tmpDir, "projects")
+		if err := os.MkdirAll(targetDir, 0o755); err != nil {
+			t.Fatalf("failed to create target dir: %v", err)
+		}
+
+		db, err := database.InitDatabase(dbPath)
+		if err != nil {
+			t.Fatalf("failed to init database: %v", err)
+		}
+		if err := db.AddAlias("proj", targetDir); err != nil {
+			t.Fatalf("failed to add alias: %v", err)
+		}
+		if err := db.Save(dbPath); err != nil {
+			t.Fatalf("failed to save database: %v", err)
+		}
+
+		t.Setenv("TO_DB", dbPath)
+		stubNavigationControlWriter(t, func(path string) error {
+			return fmt.Errorf("bad file descriptor")
+		})
+
+		rootCmd.SetArgs([]string{"proj"})
+
+		err = rootCmd.Execute()
+		if err == nil {
+			t.Fatal("expected error when control channel is unavailable, got nil")
+		}
+		if !strings.Contains(err.Error(), "navigation protocol channel unavailable") {
+			t.Fatalf("expected navigation channel error, got %q", err.Error())
 		}
 	})
 }

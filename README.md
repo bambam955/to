@@ -75,6 +75,26 @@ to -c
 
 See [docs/CLI.md](docs/CLI.md) for the full CLI reference.
 
+### Color Output
+
+`to` applies ANSI colors automatically when output is connected to an interactive terminal (TTY), including:
+
+- help/usage text
+- list output (`to --list`)
+- warnings, success messages, and errors
+
+When output is redirected or piped, color is disabled automatically so output remains plain text.
+
+```bash
+# Interactive terminal: colored output
+to --help
+to --list
+
+# Non-interactive: plain output (no ANSI escapes)
+to --list | cat
+to --help > help.txt
+```
+
 ## Configuration
 
 Alias data is stored in `~/.config/to/database.json` (XDG-compliant).
@@ -92,7 +112,7 @@ export TO_DB=~/custom/path/database.json
 - **`to-backend`** — A Go binary (using cobra) that resolves aliases, manages the database, and writes results to stdout.
 - **`to.bash`** — A bash function wrapper that calls `to-backend`, intercepts navigation responses, and performs the actual `cd`.
 
-This split exists because a subprocess cannot change the parent shell's working directory. The backend outputs a `[to] <path>` protocol line on successful navigation, which the shell wrapper parses to run `cd`.
+This split exists because a subprocess cannot change the parent shell's working directory. On successful navigation, the backend emits a control frame on file descriptor 3 (`NAV <path>`), and the shell wrapper parses that control channel to run `cd`.
 
 ## Development
 
