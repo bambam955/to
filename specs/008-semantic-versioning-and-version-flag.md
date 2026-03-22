@@ -15,7 +15,7 @@ This spec defines a repeatable workflow for:
 
 - release tag naming and version numbering
 - build-time version metadata embedded into binaries
-- `to -v` / `to --version` output for installed binaries
+- `TO <version>` output from `to -v` / `to --version`
 - release-process alignment between tags, binaries, and release artifacts
 
 ## Why It's Needed
@@ -45,8 +45,8 @@ This spec defines a repeatable workflow for:
 ### Version Flag Behavior
 
 - Chosen: support `to -v` and `to --version` at the CLI root.
-- Chosen: print a short, machine-readable version string and exit 0.
-- Chosen: untagged development builds fall back to a clear placeholder such as `dev`.
+- Chosen: print `TO <version>` as a short, machine-readable version string and exit 0.
+- Chosen: untagged development builds print `TO dev`.
 - Considered: a verbose multi-line banner
   - harder to parse
   - unnecessary for a simple CLI version check
@@ -55,6 +55,7 @@ This spec defines a repeatable workflow for:
 
 - Chosen: the version flag output must match the Git tag used to build the release artifact exactly.
 - Chosen: tagged release builds should stamp the binary and release artifacts with the same semantic version.
+- Chosen: treat the changelog workflow in spec 007 as the companion release-notes process for the same tags.
 - Considered: deriving version from package state at runtime
   - mismatched with distributed artifacts
   - complicates reproducible release builds
