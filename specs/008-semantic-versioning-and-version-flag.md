@@ -1,8 +1,10 @@
 ---
 number: 8
-status: draft
+status: approved
 author: Bennett Moore
 creation_date: 2026-03-22
+approved_by: Bennett Moore
+approval_date: 2026-03-22
 ---
 
 # Semantic Versioning and Version Flag
