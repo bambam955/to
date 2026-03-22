@@ -9,7 +9,7 @@ creation_date: 2026-03-22
 
 ## Overview
 
-Adopt `git-cliff` to generate and maintain `CHANGELOG.md` from Conventional Commit history.
+Adopt `git-cliff` to generate and maintain `CHANGELOG.md` from Conventional Commit history and the project's release tags.
 
 This spec defines a repeatable workflow for:
 
@@ -50,9 +50,10 @@ This spec defines a repeatable workflow for:
   - less local setup
   - hides drift until release time
 
-### Versioning and Tag Behavior
+### Release Tag Integration
 
-- Chosen: generate per-release sections based on Git tags, with an unreleased section for changes since last tag.
+- Chosen: generate per-release sections based on the repository's release tags, with an unreleased section for changes since last tag.
+- Chosen: keep tag names and changelog headings aligned so the release version in `CHANGELOG.md` matches the release tag exactly.
 - Considered: full regenerate without release boundaries
   - simpler mental model
   - less useful for release-oriented reading
@@ -73,6 +74,7 @@ This spec defines a repeatable workflow for:
 - [ ] Add `CHANGELOG.md` if it does not exist, with generated content seed.
 - [ ] Ensure generated content is stable and deterministic for repeat runs.
 - [ ] Preserve any required project-specific intro/header text above generated sections.
+- [ ] Ensure generated release sections use exact release tag identifiers from Git tags.
 
 ### CI Enforcement
 
