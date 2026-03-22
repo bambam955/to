@@ -15,7 +15,7 @@ source ~/.local/bin/to.bash
 to <alias>
 ```
 
-Changes directory to the registered alias. Outputs `[to] <path>` to stdout on success.
+Changes directory to the registered alias. Navigation control is emitted on fd 3 (`NAV <path>`) for shell wrappers; normal stdout is reserved for user-facing output.
 
 ### Register an alias
 

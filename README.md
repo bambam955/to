@@ -112,7 +112,7 @@ export TO_DB=~/custom/path/database.json
 - **`to-backend`** — A Go binary (using cobra) that resolves aliases, manages the database, and writes results to stdout.
 - **`to.bash`** — A bash function wrapper that calls `to-backend`, intercepts navigation responses, and performs the actual `cd`.
 
-This split exists because a subprocess cannot change the parent shell's working directory. The backend outputs a `[to] <path>` protocol line on successful navigation, which the shell wrapper parses to run `cd`.
+This split exists because a subprocess cannot change the parent shell's working directory. On successful navigation, the backend emits a control frame on file descriptor 3 (`NAV <path>`), and the shell wrapper parses that control channel to run `cd`.
 
 ## Development
 

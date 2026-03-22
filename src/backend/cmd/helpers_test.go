@@ -73,3 +73,15 @@ func forceTTYDetection(t *testing.T, isTTY bool) {
 func containsANSI(text string) bool {
 	return strings.Contains(text, "\x1b[")
 }
+
+// stubNavigationControlWriter swaps the fd3 navigation writer for tests so
+// command behavior can be verified without touching real process descriptors.
+func stubNavigationControlWriter(t *testing.T, fn func(path string) error) {
+	t.Helper()
+
+	previous := writeNavigationControl
+	writeNavigationControl = fn
+	t.Cleanup(func() {
+		writeNavigationControl = previous
+	})
+}
