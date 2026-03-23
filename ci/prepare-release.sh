@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Resolve the repository root so the script behaves the same from any cwd.
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "${repo_root}"
+
+usage() {
+    echo "Usage: $0 <version>" >&2
+    exit 1
+}
+
+require_command() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        echo "error: required command not found: $1" >&2
+        exit 1
+    fi
+}
+
+if [[ "$#" -ne 1 ]]; then
+    usage
+fi
+
+version="$1"
+release_branch="release/${version}"
+release_regex='^[0-9]+\.[0-9]+\.[0-9]+$'
+
+if [[ ! "${version}" =~ ${release_regex} ]]; then
+    echo "error: version must be bare semantic versioning (for example 1.2.3)" >&2
+    exit 1
+fi
+
+require_command git
+require_command git-cliff
+require_command gh
+
+# Release prep should always start from a clean main checkout so the generated
+# changelog is based on the exact release candidate state.
+current_branch="$(git branch --show-current)"
+if [[ "${current_branch}" != "main" ]]; then
+    echo "error: prep-release must be run from main (current: ${current_branch})" >&2
+    exit 1
+fi
+
+worktree_status="$(git status --porcelain)"
+if [[ -n "${worktree_status}" ]]; then
+    echo "error: working tree must be clean before preparing a release" >&2
+    exit 1
+fi
+
+if git show-ref --verify --quiet "refs/heads/${release_branch}"; then
+    echo "error: local branch already exists: ${release_branch}" >&2
+    exit 1
+fi
+
+if git ls-remote --exit-code --heads origin "${release_branch}" >/dev/null 2>&1; then
+    echo "error: remote branch already exists: ${release_branch}" >&2
+    exit 1
+fi
+
+git switch -c "${release_branch}"
+
+# Generate the full changelog for the requested release version so CI can
+# reproduce it exactly from branch name + repo state.
+git-cliff --config cliff.toml --tag "${version}" --output CHANGELOG.md
+
+git add CHANGELOG.md
+git commit -m "chore(changelog): prepare release ${version}"
+git push -u origin "${release_branch}"
+
+gh pr create \
+    --base main \
+    --head "${release_branch}" \
+    --title "release: ${version}" \
+    --body "Prepare release ${version}.
+
+- regenerate CHANGELOG.md for ${version}
+- open the release PR before pushing the matching tag"
+
+echo "Release branch created: ${release_branch}"
+echo "Next steps:"
+echo "  1. Review and merge the release PR"
+echo "  2. Push the matching tag: git tag ${version} && git push origin ${version}"

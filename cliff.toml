@@ -1,0 +1,55 @@
+# git-cliff configuration for the to release workflow.
+# The file keeps release notes stable by generating the entire changelog from
+# Conventional Commit history and exact bare semantic version tags.
+
+[changelog]
+header = """
+# Changelog
+
+All notable changes to `to` are documented in this file.
+
+This changelog is generated from Conventional Commit history with `git-cliff`.
+"""
+
+body = """
+{% if version -%}
+## [{{ version }}] - {{ timestamp | date(format="%Y-%m-%d") }}
+{% else -%}
+## [Unreleased]
+{% endif %}
+
+{% for group, commits in commits | group_by(attribute="group") -%}
+### {{ group }}
+{% for commit in commits -%}
+- {% if commit.breaking %}**BREAKING** {% endif %}{% if commit.scope %}**{{ commit.scope }}:** {% endif %}{{ commit.message | upper_first }}
+{% endfor %}
+{% endfor %}
+"""
+
+trim = true
+render_always = true
+footer = ""
+
+[git]
+conventional_commits = true
+filter_unconventional = false
+split_commits = false
+protect_breaking_commits = true
+filter_commits = true
+fail_on_unmatched_commit = false
+tag_pattern = "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+topo_order = false
+topo_order_commits = true
+sort_commits = "oldest"
+
+commit_parsers = [
+    { message = "^Initial commit$", skip = true },
+    { message = "^feat", group = "Features" },
+    { message = "^fix", group = "Bug Fixes" },
+    { message = "^docs", group = "Documentation" },
+    { message = "^refactor", group = "Refactors" },
+    { message = "^test", group = "Testing" },
+    { message = "^chore\\(changelog\\): prepare release [0-9]+\\.[0-9]+\\.[0-9]+$", skip = true },
+    { message = "^chore", group = "Maintenance" },
+    { message = "^spec", skip = true },
+]

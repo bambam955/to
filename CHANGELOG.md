@@ -1,0 +1,30 @@
+# Changelog
+
+All notable changes to `to` are documented in this file.
+
+This changelog is generated from Conventional Commit history with `git-cliff`.
+## [Unreleased]
+
+
+### Features
+- Add semver flag to CLI (#12)
+
+## [0.1.0] - 2026-03-22
+
+
+### Features
+- Initial project setup with BASH/Golang integration (#2)
+- Database design (#3)
+- Navigation and core commands (#4)
+- Utility commands (#5)
+- Shell compatibility (#6)
+- Colored CLI output + fd3 protocol transport (#10)
+
+### Maintenance
+- Add uninstall/upgrade just recipes and full README quickstart
+
+### Refactors
+- Organize files (#9)
+
+### Testing
+- Add wrapper integration tests (#7)

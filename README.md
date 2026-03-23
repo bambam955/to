@@ -35,7 +35,7 @@ This builds the `to-backend` binary and copies it along with `to.bash` to `~/.lo
 Add this line to your `.bashrc` or `.zshrc`:
 
 ```bash
-source ~/.local/bin/bash
+source ~/.local/bin/to.bash
 ```
 
 ## Usage
@@ -129,12 +129,41 @@ This split exists because a subprocess cannot change the parent shell's working 
 ```bash
 TO_VERSION=1.2.3 just build   # Build a tagged release binary
 just build                    # Build a local development binary
+just changelog                # Regenerate CHANGELOG.md for the current repo state
+just prep-release 1.2.3       # Create release/1.2.3, regenerate CHANGELOG.md, and open the release PR
 just test       # Run all tests
 just fmt        # Format Go and shell code
 just lint       # go vet + shellcheck
 just dev        # Full cycle: clean → fmt → lint → test → build
 just upgrade    # Rebuild and reinstall
 ```
+
+### Release Changelog Workflow
+
+Release preparation requires:
+
+- `git-cliff` on your `PATH`
+- GitHub CLI (`gh`) on your `PATH`
+- an authenticated GitHub CLI session (`gh auth login`)
+
+Run `just prep-release <version>` from a clean `main` checkout. The command:
+
+1. creates `release/<version>`
+2. regenerates `CHANGELOG.md` for that exact release version
+3. commits the changelog update
+4. pushes the release branch
+5. opens the release PR against `main`
+
+After the release PR is merged, cut the release by pushing the matching bare tag:
+
+```bash
+git tag 1.2.3
+git push origin 1.2.3
+```
+
+The tag-triggered publishing workflow defined in spec `005` is expected to use the matching `CHANGELOG.md` section as the GitHub Release notes source of truth, with deployment approval if configured.
+
+Only user-facing Conventional Commit types are included in generated release notes. `spec:` commits are intentionally excluded, so use `feat`, `fix`, `docs`, `refactor`, `test`, and `chore` for releasable work.
 
 ## Uninstalling
 
