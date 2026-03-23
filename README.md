@@ -48,6 +48,7 @@ source ~/.local/bin/bash
 | List all | `to --list` | `to -l` |
 | Clean stale | `to --clean` | `to -c` |
 | Expand path | `to --exp <alias>` | `to -e <alias>` |
+| Version | `to --version` | `to -v` |
 
 ### Examples
 
@@ -95,6 +96,15 @@ to --list | cat
 to --help > help.txt
 ```
 
+Version output is always plain text so release checks and scripts can parse it reliably.
+
+```bash
+to --version
+# TO 1.2.3
+```
+
+Release builds should be tagged with bare Semantic Versioning identifiers like `1.2.3`, and the same value should be passed to `TO_VERSION` when building the binary.
+
 ## Configuration
 
 Alias data is stored in `~/.config/to/database.json` (XDG-compliant).
@@ -117,7 +127,8 @@ This split exists because a subprocess cannot change the parent shell's working 
 ## Development
 
 ```bash
-just build      # Build the binary
+TO_VERSION=1.2.3 just build   # Build a tagged release binary
+just build                    # Build a local development binary
 just test       # Run all tests
 just fmt        # Format Go and shell code
 just lint       # go vet + shellcheck

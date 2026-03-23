@@ -17,7 +17,7 @@ install shell="bash": build
 
 # Build the Go backend binary
 build:
-    cd src/backend && go build -o ../../bin/to-backend ./cmd
+    cd src/backend && go build -ldflags "-X main.buildVersion=${TO_VERSION:-dev}" -o ../../bin/to-backend ./cmd
 
 # Uninstall both components
 uninstall shell="bash":

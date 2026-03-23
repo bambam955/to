@@ -49,6 +49,8 @@ const styledHelpTemplate = `{{with (or .Long .Short)}}{{toHelpText $ .}}{{"\n\n"
 	`{{if .HasAvailableSubCommands}}{{"\n"}}{{toHelpText . (printf "Use \"%s [command] --help\" for more information about a command." .CommandPath)}}{{end}}{{"\n"}}`
 
 func init() {
+	configureVersion(rootCmd)
+
 	// Register template functions once; each call resolves styles from the
 	// command's active output stream so TTY/non-TTY behavior stays correct.
 	cobra.AddTemplateFunc("toHelpLabel", func(cmd *cobra.Command, text string) string {

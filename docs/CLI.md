@@ -62,6 +62,17 @@ to -e <alias>
 
 Output the absolute path for an alias (useful for scripts). Outputs only the path with no extra formatting.
 
+### Inspect the installed version
+
+```bash
+to --version
+to -v
+```
+
+Print the installed semantic version as `TO <version>`. Development builds fall back to `TO dev`, and release builds are expected to match the semantic tag used to compile the binary.
+
+Release tags use bare Semantic Versioning identifiers such as `1.2.3`, and tagged builds should pass the same value through `TO_VERSION` so the binary and any packaged release artifacts stay aligned.
+
 ## Error Handling
 
 All errors print to stderr with `error: ` prefix and exit with code 1.
@@ -71,7 +82,8 @@ Success returns exit code 0.
 ## Build & Development
 
 ```bash
-just build      # Build the binary
+TO_VERSION=1.2.3 just build   # Build a tagged release binary
+just build                    # Build a local development binary
 just test       # Run tests
 just clean      # Clean build artifacts
 just dev        # Full dev build (test + build)
