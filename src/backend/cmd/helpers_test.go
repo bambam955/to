@@ -14,6 +14,8 @@ import (
 func resetFlags(t *testing.T) {
 	t.Helper()
 
+	previousBuildVersion := buildVersion
+
 	resetCobraFlags := func() {
 		// Cobra tracks flag values in the FlagSet in addition to the package
 		// bool variables, so we reset both to avoid state leakage across tests.
@@ -24,6 +26,8 @@ func resetFlags(t *testing.T) {
 	}
 
 	t.Cleanup(func() {
+		buildVersion = previousBuildVersion
+		configureVersion(rootCmd)
 		resetCobraFlags()
 		flagReg = false
 		flagUnreg = false
@@ -39,10 +43,25 @@ func resetFlags(t *testing.T) {
 	flagList = false
 	flagClean = false
 	flagExp = false
+	configureVersion(rootCmd)
 	resetCobraFlags()
 	rootCmd.SetArgs(nil)
 	rootCmd.SetOut(io.Discard)
 	rootCmd.SetErr(io.Discard)
+}
+
+// setBuildVersion updates the shared build metadata for tests and restores the
+// previous value after the test finishes.
+func setBuildVersion(t *testing.T, version string) {
+	t.Helper()
+
+	previousBuildVersion := buildVersion
+	buildVersion = version
+	configureVersion(rootCmd)
+	t.Cleanup(func() {
+		buildVersion = previousBuildVersion
+		configureVersion(rootCmd)
+	})
 }
 
 // testTTYBuffer captures output while exposing a fake file descriptor so TTY

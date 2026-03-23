@@ -1,6 +1,6 @@
 ---
 number: 8
-status: approved
+status: completed
 author: Bennett Moore
 creation_date: 2026-03-22
 approved_by: Bennett Moore
@@ -66,17 +66,17 @@ This spec defines a repeatable workflow for:
 
 ### CLI Version Support
 
-- [ ] Add build-time version metadata to the Go backend.
-- [ ] Add `-v` / `--version` support at the CLI root to print the installed version.
-- [ ] Define development-build fallback behavior for binaries built outside a tagged release.
-- [ ] Add unit tests for version output in release and development build modes.
+- [x] Add build-time version metadata to the Go backend.
+- [x] Add `-v` / `--version` support at the CLI root to print the installed version.
+- [x] Define development-build fallback behavior for binaries built outside a tagged release.
+- [x] Add unit tests for version output in release and development build modes.
 
 ### Build and Release Wiring
 
-- [ ] Update build and release commands so tagged builds inject the release version into the binary.
-- [ ] Ensure release artifacts report the same semantic version as the tagged binary.
-- [ ] Document the versioning contract for tagged releases in developer docs.
+- [x] Update build and release commands so tagged builds inject the release version into the binary.
+- [x] Ensure release artifacts report the same semantic version as the tagged binary.
+- [x] Document the versioning contract for tagged releases in developer docs.
 
 ### Documentation
 
-- [ ] Update README with version flag usage and release tag format.
+- [x] Update README with version flag usage and release tag format.
