@@ -129,7 +129,7 @@ This split exists because a subprocess cannot change the parent shell's working 
 ```bash
 TO_VERSION=1.2.3 just build   # Build a tagged release binary
 just build                    # Build a local development binary
-just gen-changelog            # Regenerate CHANGELOG.md for the current repo state
+just gen-changelog            # Regenerate CHANGELOG.md from mainline or the active release branch
 just prep-release 1.2.3       # Create release/1.2.3, regenerate CHANGELOG.md, and open the release PR
 just test       # Run all tests
 just fmt        # Format Go and shell code
@@ -148,11 +148,12 @@ Release preparation requires:
 
 Run `just prep-release <version>` from a clean `main` checkout. The command:
 
-1. creates `release/<version>`
-2. regenerates `CHANGELOG.md` for that exact release version
-3. commits the changelog update
-4. pushes the release branch
-5. opens the release PR against `main`
+1. fetches `origin/main` and verifies local `main` is in sync
+2. creates `release/<version>`
+3. regenerates `CHANGELOG.md` for that exact release version
+4. commits the changelog update
+5. pushes the release branch
+6. opens the release PR against `main`
 
 After the release PR is merged, cut the release by pushing the matching bare tag:
 
@@ -164,6 +165,7 @@ git push origin 1.2.3
 The tag-triggered publishing workflow defined in spec `005` is expected to use the matching `CHANGELOG.md` section as the GitHub Release notes source of truth, with deployment approval if configured.
 
 Only user-facing Conventional Commit types are included in generated release notes. `spec:` commits are intentionally excluded, so use `feat`, `fix`, `docs`, `refactor`, `test`, and `chore` for releasable work.
+When `just gen-changelog` is run from a non-`main`, non-`release/*` branch, it fetches `origin/main` and renders the changelog from that mainline history so local branch commits do not leak into `CHANGELOG.md`.
 
 ## Uninstalling
 

@@ -42,7 +42,7 @@ trap 'rm -f "${tmp_changelog}"' EXIT
 
 # Regenerate the changelog exactly as prep-release would and compare the result
 # to the checked-in file. The remediation command matches the release workflow.
-git-cliff --config cliff.toml --tag "${version}" --output "${tmp_changelog}"
+bash ci/generate-changelog.sh --branch "${branch_name}" --tag "${version}" --output "${tmp_changelog}"
 
 if ! diff -u CHANGELOG.md "${tmp_changelog}"; then
     echo "error: CHANGELOG.md is out of date for release ${version}" >&2

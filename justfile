@@ -34,7 +34,7 @@ purge shell="bash": (uninstall shell)
 
 # Generate the checked-in changelog from the current repository state
 gen-changelog:
-    git-cliff --config cliff.toml --output CHANGELOG.md
+    bash ci/generate-changelog.sh --output CHANGELOG.md
 
 # Create and open a release PR for the requested semantic version
 prep-release version:

@@ -59,11 +59,25 @@ if git ls-remote --exit-code --heads origin "${release_branch}" >/dev/null 2>&1;
     exit 1
 fi
 
+# Release branches must be cut from the exact remote mainline tip. Fetch first
+# and fail fast if local main is ahead, behind, or diverged.
+git fetch --quiet origin main
+
+local_main_sha="$(git rev-parse HEAD)"
+remote_main_sha="$(git rev-parse refs/remotes/origin/main)"
+if [[ "${local_main_sha}" != "${remote_main_sha}" ]]; then
+    echo "error: local main must match origin/main before preparing a release" >&2
+    echo "hint: update main first (for example: git pull --ff-only)" >&2
+    echo "local main:  ${local_main_sha}" >&2
+    echo "origin/main: ${remote_main_sha}" >&2
+    exit 1
+fi
+
 git switch -c "${release_branch}"
 
 # Generate the full changelog for the requested release version so CI can
 # reproduce it exactly from branch name + repo state.
-git-cliff --config cliff.toml --tag "${version}" --output CHANGELOG.md
+bash ci/generate-changelog.sh --branch "${release_branch}" --tag "${version}" --output CHANGELOG.md
 
 git add CHANGELOG.md
 git commit -m "chore(changelog): prepare release ${version}"
