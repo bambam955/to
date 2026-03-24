@@ -138,34 +138,7 @@ just dev        # Full cycle: clean → fmt → lint → test → build
 just upgrade    # Rebuild and reinstall
 ```
 
-### Release Changelog Workflow
-
-Release preparation requires:
-
-- `git-cliff` on your `PATH`
-- GitHub CLI (`gh`) on your `PATH`
-- an authenticated GitHub CLI session (`gh auth login`)
-
-Run `just prep-release <version>` from a clean `main` checkout. The command:
-
-1. fetches `origin/main` and verifies local `main` is in sync
-2. creates `release/<version>`
-3. regenerates `CHANGELOG.md` for that exact release version
-4. commits the changelog update
-5. pushes the release branch
-6. opens the release PR against `main`
-
-After the release PR is merged, cut the release by pushing the matching bare tag:
-
-```bash
-git tag 1.2.3
-git push origin 1.2.3
-```
-
-The tag-triggered publishing workflow defined in spec `005` is expected to use the matching `CHANGELOG.md` section as the GitHub Release notes source of truth, with deployment approval if configured.
-
-Only user-facing Conventional Commit types are included in generated release notes. `spec:` commits are intentionally excluded, so use `feat`, `fix`, `docs`, `refactor`, `test`, and `chore` for releasable work.
-When `just gen-changelog` is run from a non-`main`, non-`release/*` branch, it fetches `origin/main` and renders the changelog from that mainline history so local branch commits do not leak into `CHANGELOG.md`.
+Release workflow details live in [docs/release-workflow.md](docs/release-workflow.md).
 
 ## Uninstalling
 
