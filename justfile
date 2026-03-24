@@ -70,4 +70,4 @@ lint:
 # Format all Go source code
 fmt:
     cd src/backend && gofmt -w .
-    shfmt -i 4 -w .
+    shfmt -i 4 -w src/wrappers/*.bash tests/**/*.bash tests/**/*.sh ci/*.sh

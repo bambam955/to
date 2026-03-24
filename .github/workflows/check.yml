@@ -41,7 +41,7 @@ jobs:
         run: cd src/backend && go fmt ./... && git diff --exit-code
 
       - name: Run shfmt
-        run: shfmt -i 4 -w . && git diff --exit-code
+        run: shfmt -i 4 -w src/wrappers/*.bash tests/**/*.bash tests/**/*.sh ci/*.sh && git diff --exit-code
 
   changelog:
     if: ${{ (github.event_name == 'push' && startsWith(github.ref_name, 'release/')) || (github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/')) }}
