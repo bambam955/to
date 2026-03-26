@@ -34,11 +34,20 @@ just prep-release 1.2.3
 `just gen-changelog` behaves differently depending on the current branch:
 
 - on `main`, it uses the current `main` checkout
-- on `release/*`, it uses the current release branch
+- on `release/*`, it uses the current release branch and infers the matching release version from the branch name
 - on any other branch, it fetches `origin/main` and renders from mainline history
 
 That last rule keeps local implementation-branch commits from leaking into the
 checked-in changelog.
+
+If changelog validation fails on an existing `release/*` branch, run:
+
+```bash
+just gen-changelog
+```
+
+Use `just prep-release <version>` only to create a new release branch from a
+clean `main` checkout.
 
 ## Publish the Release
 

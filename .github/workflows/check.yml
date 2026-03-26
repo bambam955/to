@@ -2,7 +2,7 @@ name: Check
 
 on:
   push:
-    branches: [main, 'release/**']
+    branches: [main]
   pull_request:
 
 jobs:
@@ -11,48 +11,27 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-go@v6
+      - uses: jdx/mise-action@v4
         with:
-          go-version: '1.25'
-          cache-dependency-path: src/backend/go.sum
+          install_args: go shellcheck
 
       - name: Run go vet
         run: cd src/backend && go vet ./...
 
-      - uses: ludeeus/action-shellcheck@master
-        with:
-          ignore_paths: './**/*.fish ./**/*.zsh'
-        env:
-          SHELLCHECK_OPTS: --enable=all --shell=bash
+      - name: Run ShellCheck
+        run: shellcheck --enable=all --shell=bash src/wrappers/*.bash tests/**/*.bash tests/**/*.sh ci/*.sh
 
   check_format:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-go@v6
+      - uses: jdx/mise-action@v4
         with:
-          go-version: '1.25'
-          cache-dependency-path: src/backend/go.sum
-
-      - uses: mfinelli/setup-shfmt@v4
+          install_args: go shfmt
 
       - name: Run go fmt
         run: cd src/backend && go fmt ./... && git diff --exit-code
 
       - name: Run shfmt
         run: shfmt -i 4 -w src/wrappers/*.bash tests/**/*.bash tests/**/*.sh ci/*.sh && git diff --exit-code
-
-  changelog:
-    if: ${{ (github.event_name == 'push' && startsWith(github.ref_name, 'release/')) || (github.event_name == 'pull_request' && startsWith(github.head_ref, 'release/')) }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-
-      - name: Set up git-cliff
-        uses: kenji-miyake/setup-git-cliff@v1
-
-      - name: Verify changelog
-        run: bash ci/check-changelog.sh

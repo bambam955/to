@@ -1,0 +1,6 @@
+[tools]
+git-cliff = "latest"
+go = "1.25.8"
+just = "latest"
+shellcheck = "latest"
+shfmt = "latest"

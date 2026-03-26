@@ -11,10 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-go@v6
+      - uses: jdx/mise-action@v4
         with:
-          go-version: '1.25'
-          cache-dependency-path: src/backend/go.sum
+          install_args: go
 
       - name: Run unit tests
         run: cd src/backend && go test -v -race -coverprofile=coverage.out ./...
@@ -33,12 +32,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - run: sudo apt-get install -y zsh fish
-
-      - uses: actions/setup-go@v6
+      # Shell packages come from apt; the backend binary still comes from mise-managed Go.
+      - run: sudo apt-get install -y ${{ matrix.shell }}
+      - uses: jdx/mise-action@v4
         with:
-          go-version: '1.25'
-          cache-dependency-path: src/backend/go.sum
+          install_args: go
 
       - name: Build binary
         run: cd src/backend && go build -ldflags "-X main.buildVersion=${TO_VERSION:-dev}" -o ../../bin/to-backend ./cmd

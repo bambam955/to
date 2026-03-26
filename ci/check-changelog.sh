@@ -40,13 +40,15 @@ fi
 tmp_changelog="$(mktemp)"
 trap 'rm -f "${tmp_changelog}"' EXIT
 
-# Regenerate the changelog exactly as prep-release would and compare the result
-# to the checked-in file. The remediation command matches the release workflow.
+# Regenerate the changelog exactly as the release workflow expects and compare
+# the result to the checked-in file.
 bash ci/generate-changelog.sh --branch "${branch_name}" --tag "${version}" --output "${tmp_changelog}"
 
 if ! diff -u CHANGELOG.md "${tmp_changelog}"; then
     echo "error: CHANGELOG.md is out of date for release ${version}" >&2
-    echo "run: just prep-release ${version}" >&2
+    # Existing release branches only need the changelog regenerated in place.
+    # `prep-release` creates a new branch and is intentionally not reusable here.
+    echo "run: just gen-changelog" >&2
     exit 1
 fi
 

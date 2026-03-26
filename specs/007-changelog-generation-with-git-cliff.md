@@ -69,7 +69,7 @@ This spec defines a repeatable workflow for:
 
 ### CI Scope
 
-- Chosen: changelog freshness checks run only on `release/*` branch pushes and pull requests whose head branch matches `release/*`.
+- Chosen: changelog freshness checks run in a dedicated release-only workflow on `release/*` branch pushes and pull requests whose head branch matches `release/*`.
 - Considered: enforcing changelog freshness on every branch
   - catches drift earlier
   - adds noise to ordinary feature development when release notes are not being prepared
@@ -109,9 +109,9 @@ This spec defines a repeatable workflow for:
 
 ### CI Enforcement
 
-- [x] Add CI step to verify changelog generation is up to date only for `release/*` branch pushes and pull requests from `release/*` branches.
+- [x] Add release-only CI workflow to verify changelog generation is up to date only for `release/*` branch pushes and pull requests from `release/*` branches.
 - [x] Fail CI when `CHANGELOG.md` differs from generated output.
-- [x] Document the remediation command in CI failure output using `just prep-release <version>`.
+- [x] Document the remediation command in CI failure output using `just gen-changelog` for existing release branches.
 
 ### Documentation and Release Process
 

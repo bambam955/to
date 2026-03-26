@@ -24,6 +24,7 @@ require_command() {
 branch_name="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME:-$(git branch --show-current)}}"
 tag_value=""
 output_path="CHANGELOG.md"
+release_version_regex='^[0-9]+\.[0-9]+\.[0-9]+$'
 
 while [[ "$#" -gt 0 ]]; do
     case "$1" in
@@ -64,6 +65,24 @@ if [[ "${output_path}" = /* ]]; then
     output_abs="${output_path}"
 else
     output_abs="${repo_root}/${output_path}"
+fi
+
+# Release branches need an explicit tag value so git-cliff renders the pending
+# release heading instead of falling back to an unreleased section. Allow
+# callers like `just gen-changelog` to stay argument-free by deriving the
+# version from the branch name when the caller did not override `--tag`.
+if [[ -z "${tag_value}" ]]; then
+    case "${branch_name}" in
+    release/*)
+        inferred_version="${branch_name#release/}"
+        if [[ ! "${inferred_version}" =~ ${release_version_regex} ]]; then
+            echo "error: release branch must end with a bare semantic version (got: ${inferred_version})" >&2
+            exit 1
+        fi
+        tag_value="${inferred_version}"
+        ;;
+    *) ;;
+    esac
 fi
 
 run_git_cliff() {

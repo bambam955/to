@@ -129,7 +129,7 @@ This split exists because a subprocess cannot change the parent shell's working 
 ```bash
 TO_VERSION=1.2.3 just build   # Build a tagged release binary
 just build                    # Build a local development binary
-just gen-changelog            # Regenerate CHANGELOG.md from mainline or the active release branch
+just gen-changelog            # Regenerate CHANGELOG.md from mainline or refresh the active release branch
 just prep-release 1.2.3       # Create release/1.2.3, regenerate CHANGELOG.md, and open the release PR
 just test       # Run all tests
 just fmt        # Format Go and shell code
