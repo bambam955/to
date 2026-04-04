@@ -25,6 +25,7 @@ fi
 version="$1"
 release_branch="release/${version}"
 release_regex='^[0-9]+\.[0-9]+\.[0-9]+$'
+release_date="$(date +%Y-%m-%d)"
 
 if [[ ! "${version}" =~ ${release_regex} ]]; then
     echo "error: version must be bare semantic versioning (for example 1.2.3)" >&2
@@ -76,11 +77,15 @@ fi
 git switch -c "${release_branch}"
 
 # Generate the full changelog for the requested release version so CI can
-# reproduce it exactly from branch name + repo state.
-bash ci/generate-changelog.sh --branch "${release_branch}" --tag "${version}" --output CHANGELOG.md
+# reproduce it exactly from branch name + repo state. The release date is
+# chosen once here and then persisted in the prep commit trailer so later
+# reruns stay deterministic until the branch is merged and tagged.
+bash ci/generate-changelog.sh --branch "${release_branch}" --tag "${version}" --release-date "${release_date}" --output CHANGELOG.md
 
 git add CHANGELOG.md
-git commit -m "chore(changelog): prepare release ${version}"
+git commit \
+    -m "chore(changelog): prepare release ${version}" \
+    -m "Release-Date: ${release_date}"
 git push -u origin "${release_branch}"
 
 gh pr create \

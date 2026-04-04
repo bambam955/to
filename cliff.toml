@@ -1,6 +1,9 @@
 # git-cliff configuration for the to release workflow.
 # The file keeps release notes stable by generating the entire changelog from
 # Conventional Commit history and exact bare semantic version tags.
+# Pending release branches still render dated headings before the tag exists,
+# but ci/generate-changelog.sh injects the committed Release-Date trailer into
+# the latest release context so reruns stay deterministic.
 
 [changelog]
 header = """
@@ -63,7 +66,9 @@ commit_parsers = [
     { message = "^docs", group = "Documentation" },
     { message = "^refactor", group = "Refactors" },
     { message = "^test", group = "Testing" },
-    { message = "^chore\\(changelog\\): prepare release [0-9]+\\.[0-9]+\\.[0-9]+$", skip = true },
+    # Release prep commits now carry a Release-Date trailer, so the skip rule
+    # must tolerate optional trailing footer lines as well as the subject line.
+    { message = "(?s)^chore\\(changelog\\): prepare release [0-9]+\\.[0-9]+\\.[0-9]+(?:\\n.*)?$", skip = true },
     { message = "^chore", group = "Maintenance" },
     { message = "^spec", skip = true },
 ]
