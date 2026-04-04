@@ -18,7 +18,7 @@ The command:
 
 1. fetches `origin/main` and verifies local `main` is in sync
 2. creates `release/<version>`
-3. chooses the release date for that branch
+3. chooses the release date for that branch in UTC
 4. regenerates `CHANGELOG.md` for that exact release version
 5. commits the changelog update with a `Release-Date: YYYY-MM-DD` trailer
 6. pushes the release branch
@@ -45,7 +45,9 @@ checked-in changelog.
 
 The `Release-Date` trailer makes pending release branches deterministic. The
 checked-in `CHANGELOG.md` no longer depends on the day `git-cliff` was run; it
-depends on the release date committed to the branch.
+depends on the release date committed to the branch. Release dates are recorded
+in UTC so the pending heading matches the UTC-based tag date that `git-cliff`
+uses after the tag exists.
 
 If changelog validation fails on an existing `release/*` branch, run:
 

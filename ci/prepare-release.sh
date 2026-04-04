@@ -25,7 +25,9 @@ fi
 version="$1"
 release_branch="release/${version}"
 release_regex='^[0-9]+\.[0-9]+\.[0-9]+$'
-release_date="$(date +%Y-%m-%d)"
+# Use UTC so the committed pending-release date matches git-cliff's UTC-based
+# tag timestamp once the release is merged and the tag exists.
+release_date="$(TZ=UTC date +%Y-%m-%d)"
 
 if [[ ! "${version}" =~ ${release_regex} ]]; then
     echo "error: version must be bare semantic versioning (for example 1.2.3)" >&2
