@@ -32,6 +32,14 @@ purge shell="bash": (uninstall shell)
     @echo "Warning: removing all configuration and data from ~/.config/to/"
     rm -rf ~/.config/to/
 
+# Generate the checked-in changelog from the current repository state
+gen-changelog:
+    bash ci/generate-changelog.sh --output CHANGELOG.md
+
+# Create and open a release PR for the requested semantic version
+prep-release version:
+    bash ci/prepare-release.sh {{ version }}
+
 # --------------- DEV COMMANDS --------------- #
 
 # Development build (clean, lint, fmt, test, build)
@@ -57,9 +65,9 @@ clean:
 lint:
     cd src/backend && go vet ./...
     @command -v shellcheck >/dev/null
-    shellcheck --enable=all --shell=bash src/wrappers/*.bash tests/**/*.bash tests/**/*.sh
+    shellcheck --enable=all --shell=bash src/wrappers/*.bash tests/**/*.bash tests/**/*.sh ci/*.sh
 
 # Format all Go source code
 fmt:
     cd src/backend && gofmt -w .
-    shfmt -i 4 -w .
+    shfmt -i 4 -w src/wrappers/*.bash tests/**/*.bash tests/**/*.sh ci/*.sh

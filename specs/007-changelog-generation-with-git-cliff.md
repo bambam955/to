@@ -1,6 +1,6 @@
 ---
 number: 7
-status: approved
+status: completed
 author: Bennett Moore
 creation_date: 2026-03-22
 approved_by: Bennett Moore
@@ -69,7 +69,7 @@ This spec defines a repeatable workflow for:
 
 ### CI Scope
 
-- Chosen: changelog freshness checks run only on `release/*` branch pushes and pull requests whose head branch matches `release/*`.
+- Chosen: changelog freshness checks run in a dedicated release-only workflow on `release/*` branch pushes and pull requests whose head branch matches `release/*`.
 - Considered: enforcing changelog freshness on every branch
   - catches drift earlier
   - adds noise to ordinary feature development when release notes are not being prepared
@@ -89,35 +89,35 @@ This spec defines a repeatable workflow for:
 
 ### Tooling and Configuration
 
-- [ ] Add `git-cliff` configuration file at repository root (for example `cliff.toml`) with:
+- [x] Add `git-cliff` configuration file at repository root (for example `cliff.toml`) with:
   - commit parser/grouping rules
   - skip rules for `spec:` and merge-noise commits
   - release header/body/footer templates
   - tag and unreleased configuration
-- [ ] Add or update project commands in `justfile` for local changelog generation, including `just prep-release <version>`.
-- [ ] Add `ci/prepare-release.sh` to validate release-prep prerequisites, create `release/<version>` from clean `main`, regenerate `CHANGELOG.md`, commit the result, push the branch, and open a pull request with GitHub CLI.
-- [ ] Document prerequisite installation guidance for `git-cliff` and `gh` in `README.md`.
+- [x] Add or update project commands in `justfile` for local changelog generation, including `just prep-release <version>`.
+- [x] Add `ci/prepare-release.sh` to validate release-prep prerequisites, create `release/<version>` from clean `main`, regenerate `CHANGELOG.md`, commit the result, push the branch, and open a pull request with GitHub CLI.
+- [x] Document prerequisite installation guidance for `git-cliff` and `gh` in `README.md`.
 
 ### Changelog File Management
 
-- [ ] Add `CHANGELOG.md` if it does not exist, with generated content seed.
-- [ ] Seed the initial changelog generation from the existing `0.1.0` tag so historical sections are backfilled automatically.
-- [ ] Ensure generated content is stable and deterministic for repeat runs.
-- [ ] Preserve any required project-specific intro/header text above generated sections.
-- [ ] Ensure generated release sections use exact release tag identifiers from Git tags.
-- [ ] Ensure `just prep-release <version>` generates the requested release section before the tag exists.
+- [x] Add `CHANGELOG.md` if it does not exist, with generated content seed.
+- [x] Seed the initial changelog generation from the existing `0.1.0` tag so historical sections are backfilled automatically.
+- [x] Ensure generated content is stable and deterministic for repeat runs.
+- [x] Preserve any required project-specific intro/header text above generated sections.
+- [x] Ensure generated release sections use exact release tag identifiers from Git tags.
+- [x] Ensure `just prep-release <version>` generates the requested release section before the tag exists.
 
 ### CI Enforcement
 
-- [ ] Add CI step to verify changelog generation is up to date only for `release/*` branch pushes and pull requests from `release/*` branches.
-- [ ] Fail CI when `CHANGELOG.md` differs from generated output.
-- [ ] Document the remediation command in CI failure output using `just prep-release <version>`.
+- [x] Add release-only CI workflow to verify changelog generation is up to date only for `release/*` branch pushes and pull requests from `release/*` branches.
+- [x] Fail CI when `CHANGELOG.md` differs from generated output.
+- [x] Document the remediation command in CI failure output using `just gen-changelog` for existing release branches.
 
 ### Documentation and Release Process
 
-- [ ] Update `README.md` with changelog workflow:
+- [x] Update `README.md` with changelog workflow:
   - how to run `just prep-release <version>` from clean `main`
   - how the command creates `release/<version>` and opens the release PR
   - that the release is cut by merging the release PR and then pushing the matching tag
-- [ ] Document that spec 005 publishes the GitHub Release from the matching `CHANGELOG.md` section, with deployment approval if configured.
-- [ ] Add a short contribution note reinforcing Conventional Commit usage for clean changelog output and noting that `spec:` commits are excluded from user-facing release notes.
+- [x] Document that spec 005 publishes the GitHub Release from the matching `CHANGELOG.md` section, with deployment approval if configured.
+- [x] Add a short contribution note reinforcing Conventional Commit usage for clean changelog output and noting that `spec:` commits are excluded from user-facing release notes.

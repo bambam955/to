@@ -1,0 +1,26 @@
+name: Release Check
+
+on:
+  push:
+    branches: ['release/**']
+  pull_request:
+
+jobs:
+  changelog:
+    if: ${{ github.event_name == 'push' || startsWith(github.head_ref, 'release/') }}
+    runs-on: ubuntu-latest
+    steps:
+      # Pull requests must validate the release branch's actual head commit.
+      # The default pull_request checkout is the synthetic merge ref, which can
+      # drift from the checked-in changelog if main advances after the PR opens.
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+      - uses: jdx/mise-action@v4
+        with:
+          install_args: git-cliff
+
+      - name: Verify changelog
+        run: bash ci/check-changelog.sh

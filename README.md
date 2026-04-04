@@ -35,7 +35,7 @@ This builds the `to-backend` binary and copies it along with `to.bash` to `~/.lo
 Add this line to your `.bashrc` or `.zshrc`:
 
 ```bash
-source ~/.local/bin/bash
+source ~/.local/bin/to.bash
 ```
 
 ## Usage
@@ -129,12 +129,16 @@ This split exists because a subprocess cannot change the parent shell's working 
 ```bash
 TO_VERSION=1.2.3 just build   # Build a tagged release binary
 just build                    # Build a local development binary
+just gen-changelog            # Regenerate CHANGELOG.md from mainline or refresh the active release branch
+just prep-release 1.2.3       # Create release/1.2.3, regenerate CHANGELOG.md, and open the release PR
 just test       # Run all tests
 just fmt        # Format Go and shell code
 just lint       # go vet + shellcheck
 just dev        # Full cycle: clean → fmt → lint → test → build
 just upgrade    # Rebuild and reinstall
 ```
+
+Release workflow details live in [docs/release-workflow.md](docs/release-workflow.md).
 
 ## Uninstalling
 
