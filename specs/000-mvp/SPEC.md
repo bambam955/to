@@ -179,6 +179,6 @@ This spec proposes creating "to", a modern directory navigation tool with a hybr
 - [x] Create installation and usage documentation
 - [ ] Add shell completion support (bash/zsh)
 - [ ] Performance testing with large alias datasets
-- [ ] Complete [spec 007: Changelog Generation with git-cliff](007-changelog-generation-with-git-cliff.md) to establish the MVP changelog workflow needed before the first release
-- [ ] Complete [spec 005: Curl Installer Script](005-curl-installer-script.md) to deliver the MVP release packaging and installer flow after the changelog workflow is in place
+- [ ] Complete [spec 007: Changelog Generation with git-cliff](specs/007-changelog-generation-with-git-cliff/SPEC.md) to establish the MVP changelog workflow needed before the first release
+- [ ] Complete [spec 005: Curl Installer Script](specs/005-curl-installer-script/SPEC.md) to deliver the MVP release packaging and installer flow after the changelog workflow is in place
 - [x] Cross-platform compatibility testing
