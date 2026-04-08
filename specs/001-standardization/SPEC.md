@@ -3,8 +3,6 @@ number: 1
 status: draft
 author: Bennett Moore
 creation_date: 2026-04-07
-approved_by: Bennett Moore
-approval_date: 2026-04-07
 ---
 
 # Standardization
