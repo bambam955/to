@@ -3,7 +3,7 @@
 ## Installation
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | sh
 source ~/.local/bin/to.bash
 ```
 

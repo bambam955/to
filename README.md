@@ -5,7 +5,7 @@
 ## Quick Start
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | sh
 source ~/.local/bin/to.bash
 
 to --reg work ~/projects/work   # Register an alias
@@ -17,7 +17,7 @@ to work                         # Jump there instantly
 ### Curl installer
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | sh
 ```
 
 The installer downloads the latest GitHub Release for Linux (`amd64` and `arm64`), verifies its SHA-256 checksum, and installs `to-backend` plus all shell wrappers to `~/.local/bin` by default.
@@ -25,8 +25,8 @@ The installer downloads the latest GitHub Release for Linux (`amd64` and `arm64`
 Override the version or target directory when needed:
 
 ```bash
-TO_INSTALL_VERSION=0.1.0 curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | bash
-TO_INSTALL_DIR=./bin curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | bash
+TO_INSTALL_VERSION=0.1.0 curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | sh
+TO_INSTALL_DIR=./bin curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | sh
 ```
 
 `TO_INSTALL_DIR` accepts relative or absolute paths. The installer resolves the final path before copying files.
