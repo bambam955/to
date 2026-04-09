@@ -9,7 +9,7 @@ curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | bash
 source ~/.local/bin/to.bash
 
 to --reg work ~/projects/work   # Register an alias
-to work                      # Jump there instantly
+to work                         # Jump there instantly
 ```
 
 ## Installation
