@@ -65,7 +65,8 @@ clean:
 lint:
     cd src/backend && go vet ./...
     @command -v shellcheck >/dev/null
-    shellcheck --enable=all src/wrappers/*.bash tests/**/*.bash tests/**/*.sh ci/*.sh install.sh
+    shellcheck --enable=all --shell=bash src/wrappers/*.bash tests/**/*.bash tests/**/*.sh ci/*.sh
+    shellcheck --enable=all --shell=sh install.sh
 
 # Format all Go source code
 fmt:

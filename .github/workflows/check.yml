@@ -19,7 +19,9 @@ jobs:
         run: cd src/backend && go vet ./...
 
       - name: Run ShellCheck
-        run: shellcheck --enable=all src/wrappers/*.bash tests/**/*.bash tests/**/*.sh ci/*.sh install.sh
+        run: |
+          shellcheck --enable=all --shell=bash src/wrappers/*.bash tests/**/*.bash tests/**/*.sh ci/*.sh
+          shellcheck --enable=all --shell=sh install.sh
 
   check_format:
     runs-on: ubuntu-latest
