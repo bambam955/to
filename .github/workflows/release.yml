@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ github.ref_name }}
+      DIST_DIR: dist
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: jdx/mise-action@v4
+        with:
+          install_args: go
+
+      - name: Build release archives
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mkdir -p "${DIST_DIR}"
+
+          for arch in amd64 arm64; do
+              package_dir="${DIST_DIR}/package/linux-${arch}"
+
+              rm -rf "${package_dir}"
+              mkdir -p "${package_dir}"
+
+              (
+                  cd src/backend
+                  GOOS=linux GOARCH="${arch}" \
+                      go build \
+                      -ldflags "-X main.buildVersion=${VERSION}" \
+                      -o "../../${package_dir}/to-backend" \
+                      ./cmd
+              )
+
+              cp src/wrappers/to.bash "${package_dir}/to.bash"
+              cp src/wrappers/to.zsh "${package_dir}/to.zsh"
+              cp src/wrappers/to.fish "${package_dir}/to.fish"
+
+              tar -C "${package_dir}" -czf "${DIST_DIR}/to-${VERSION}-linux-${arch}.tar.gz" \
+                  to-backend \
+                  to.bash \
+                  to.zsh \
+                  to.fish
+          done
+
+      - name: Generate release checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "${DIST_DIR}"
+          sha256sum to-*.tar.gz >checksums.txt
+
+      - name: Extract changelog release notes
+        run: bash ci/extract-release-notes.sh "${VERSION}" "${DIST_DIR}/release-notes.md"
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: ${{ github.ref_name }}
+          body_path: dist/release-notes.md
+          files: |
+            dist/to-*.tar.gz
+            dist/checksums.txt

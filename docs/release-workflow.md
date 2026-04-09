@@ -83,7 +83,7 @@ git tag 1.2.3
 git push origin 1.2.3
 ```
 
-The tag-triggered publishing workflow defined in spec `005` is expected to use
+The tag-triggered publishing workflow in `.github/workflows/release.yml` uses
 the matching `CHANGELOG.md` section as the GitHub Release notes source of
 truth, with deployment approval if configured.
 
