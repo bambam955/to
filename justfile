@@ -13,7 +13,8 @@ install shell="bash": build
     cp src/wrappers/to.{{ shell }} "${TO_INSTALL_DIR:-$HOME/.local/bin}/"
     @chmod +x "${TO_INSTALL_DIR:-$HOME/.local/bin}/to-backend"
     @echo "Add the following to your shell configuration:"
-    @echo "  source ${TO_INSTALL_DIR:-$HOME/.local/bin}/to.{{ shell }}"
+    @# Resolve relative install dirs before printing the shell rc snippet.
+    @echo "  source $(cd "${TO_INSTALL_DIR:-$HOME/.local/bin}" && pwd)/to.{{ shell }}"
 
 # Build the Go backend binary
 build:
