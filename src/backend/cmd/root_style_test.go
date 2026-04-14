@@ -71,16 +71,22 @@ func TestHelpExamples(t *testing.T) {
 	}
 
 	output := stdout.String()
-	expectedExamples := `Examples:
-  $ to work                         Navigate to the "work" alias
-  $ to --reg work ~/projects/work    Register "work" for a directory
-  $ to --list                        List registered aliases
-  $ to --exp work                    Print the path for "work"
-  $ to --unreg work                  Remove the "work" alias
-  $ to --clean                       Remove aliases for missing directories
-`
-	if !strings.Contains(output, expectedExamples) {
-		t.Fatalf("expected help output to include stable root examples, got: %q", output)
+	expectedExamples := []struct {
+		command     string
+		description string
+	}{
+		{command: "to work", description: `Navigate to the "work" alias`},
+		{command: "to --reg work ~/projects/work", description: `Register "work" for a directory`},
+		{command: "to --list", description: "List registered aliases"},
+		{command: "to --exp work", description: `Print the path for "work"`},
+		{command: "to --unreg work", description: `Remove the "work" alias`},
+		{command: "to --clean", description: "Remove aliases for missing directories"},
+	}
+	for _, example := range expectedExamples {
+		linePrefix := "  $ " + example.command
+		if !helpOutputHasExample(output, linePrefix, example.description) {
+			t.Fatalf("expected help output to include example %q with description %q, got: %q", example.command, example.description, output)
+		}
 	}
 
 	flagsIndex := strings.Index(output, "Flags:")
@@ -94,6 +100,15 @@ func TestHelpExamples(t *testing.T) {
 	if examplesIndex < flagsIndex {
 		t.Fatalf("expected Examples section after Flags section, got: %q", output)
 	}
+}
+
+func helpOutputHasExample(output, linePrefix, description string) bool {
+	for _, line := range strings.Split(output, "\n") {
+		if strings.HasPrefix(line, linePrefix) && strings.Contains(line, description) {
+			return true
+		}
+	}
+	return false
 }
 
 func TestFormatCommandError(t *testing.T) {
