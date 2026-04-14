@@ -1,8 +1,10 @@
 ---
 number: 2
-status: draft
+status: approved
 author: Bennett Moore
 creation_date: 2026-04-13
+approved_by: Bennett Moore
+approval_date: 2026-04-14
 ---
 
 # Help Message Examples
