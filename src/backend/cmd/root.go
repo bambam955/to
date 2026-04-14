@@ -19,6 +19,15 @@ var (
 	flagExp   bool
 )
 
+// rootExamples documents the common root-command workflows in a compact
+// command-plus-description layout for `to --help`.
+const rootExamples = `  $ to work                         Navigate to the "work" alias
+  $ to --reg work ~/projects/work    Register "work" for a directory
+  $ to --list                        List registered aliases
+  $ to --exp work                    Print the path for "work"
+  $ to --unreg work                  Remove the "work" alias
+  $ to --clean                       Remove aliases for missing directories`
+
 // rootCmd is the top-level cobra command. It uses flags (not subcommands)
 // so that the shell wrapper can expose a natural syntax:
 //
@@ -32,6 +41,7 @@ var rootCmd = &cobra.Command{
 	Use:           "to [alias]",
 	Short:         "A modern directory navigation tool",
 	Long:          "A modern directory navigation tool with JSON database support.",
+	Example:       rootExamples,
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE:          run,
