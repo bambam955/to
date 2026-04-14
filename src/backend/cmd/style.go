@@ -63,7 +63,7 @@ func newCLIFormatter(enabled bool) *cliFormatter {
 
 		helpLabel: makeStyle(color.FgCyan, color.Bold),
 		helpText:  makeStyle(color.FgWhite),
-		example:   makeStyle(color.FgHiBlack),
+		example:   makeStyle(),
 
 		listLabel: makeStyle(color.FgCyan, color.Bold),
 		listAlias: makeStyle(color.FgYellow, color.Bold),

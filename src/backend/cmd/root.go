@@ -5,8 +5,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/spf13/cobra"
 	"to/pkg/protocol"
+
+	"github.com/spf13/cobra"
 )
 
 // Operation-mode flags select which action to perform. At most one should
@@ -18,6 +19,16 @@ var (
 	flagClean bool
 	flagExp   bool
 )
+
+// rootExamples documents the common root-command workflows in a compact
+// command-plus-description layout for `to --help`.
+const rootExamples = `
+  $ to work                          Navigate to the "work" alias
+  $ to --reg work ~/projects/work    Register "work" for a directory
+  $ to --list                        List registered aliases
+  $ to --exp work                    Print the path for "work"
+  $ to --unreg work                  Remove the "work" alias
+  $ to --clean                       Remove aliases for missing directories`
 
 // rootCmd is the top-level cobra command. It uses flags (not subcommands)
 // so that the shell wrapper can expose a natural syntax:
@@ -32,6 +43,7 @@ var rootCmd = &cobra.Command{
 	Use:           "to [alias]",
 	Short:         "A modern directory navigation tool",
 	Long:          "A modern directory navigation tool with JSON database support.",
+	Example:       rootExamples,
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	RunE:          run,
@@ -60,7 +72,7 @@ func init() {
 		return formatterForOutput(cmd).HelpText(text)
 	})
 	cobra.AddTemplateFunc("toHelpExample", func(cmd *cobra.Command, text string) string {
-		lines := strings.Split(strings.TrimRight(text, "\n"), "\n")
+		lines := strings.Split(strings.Trim(text, "\n"), "\n")
 		formatter := formatterForOutput(cmd)
 		for i := range lines {
 			lines[i] = formatter.Example(lines[i])
