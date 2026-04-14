@@ -4,11 +4,15 @@ All notable changes to `to` are documented in this file.
 
 This changelog is generated from Conventional Commit history with `git-cliff`.
 
-## [Unreleased](https://github.com/bambam955/to/compare/0.1.0...HEAD)
+## [0.2.0](https://github.com/bambam955/to/compare/0.1.0...0.2.0) - 2026-04-14
 
 ### Features
 
 - Add semver flag to CLI ([#12](https://github.com/bambam955/to/pull/12))
+
+### Maintenance
+
+- Improve changelog generation workflow ([#13](https://github.com/bambam955/to/pull/13))
 
 ## [0.1.0] - 2026-03-22
 
