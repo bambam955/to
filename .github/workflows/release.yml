@@ -14,6 +14,8 @@ jobs:
     env:
       VERSION: ${{ github.ref_name }}
       DIST_DIR: dist
+      # Keep release binaries portable across glibc and musl-based Linux systems.
+      CGO_ENABLED: "0"
     steps:
       - uses: actions/checkout@v5
         with:
