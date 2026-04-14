@@ -5,22 +5,39 @@
 ## Quick Start
 
 ```bash
-just install
+curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | sh
 source ~/.local/bin/to.bash
 
 to --reg work ~/projects/work   # Register an alias
-to work                      # Jump there instantly
+to work                         # Jump there instantly
 ```
 
 ## Installation
 
-### Prerequisites
+### Curl installer
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | sh
+```
+
+The installer downloads the latest GitHub Release for Linux (`amd64` and `arm64`), verifies its SHA-256 checksum, and installs `to-backend` plus all shell wrappers to `~/.local/bin` by default.
+
+Override the version or target directory when needed:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | TO_INSTALL_VERSION=0.1.0 sh
+curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | TO_INSTALL_DIR=./bin sh
+```
+
+`TO_INSTALL_DIR` accepts relative or absolute paths. The installer resolves the final path before copying files.
+
+### Build from source
+
+Prerequisites:
 
 - **Go** 1.25+
 - **just** (command runner)
-- **bash** (or zsh)
-
-### Install
+- **bash** (or zsh / fish)
 
 ```bash
 git clone https://github.com/bambam955/to.git
@@ -28,14 +45,16 @@ cd to
 just install
 ```
 
-This builds the `to-backend` binary and copies it along with `to.bash` to `~/.local/bin/`. Make sure `~/.local/bin` is on your `PATH`.
+This builds the `to-backend` binary and copies it along with the selected shell wrapper to `~/.local/bin/` by default. Set `TO_INSTALL_DIR` to override the target directory for `just install` and `just uninstall`.
 
 ### Make it persistent
 
-Add this line to your `.bashrc` or `.zshrc`:
+Add the wrapper that matches your shell to your startup config:
 
 ```bash
 source ~/.local/bin/to.bash
+source ~/.local/bin/to.zsh
+source ~/.local/bin/to.fish
 ```
 
 ## Usage
@@ -147,7 +166,9 @@ just uninstall  # Remove binary and shell wrapper
 just purge      # Also remove ~/.config/to/ data
 ```
 
-Remember to remove the `source ~/.local/bin/to.bash` line from your shell config.
+`just uninstall` also respects `TO_INSTALL_DIR` when you installed outside `~/.local/bin`.
+
+Remember to remove the `source ~/.local/bin/to.<shell>` line from your shell config.
 
 ## License
 

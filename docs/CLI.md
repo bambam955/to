@@ -3,6 +3,13 @@
 ## Installation
 
 ```bash
+curl -fsSL https://raw.githubusercontent.com/bambam955/to/main/install.sh | sh
+source ~/.local/bin/to.bash
+```
+
+Or build from source:
+
+```bash
 just install
 source ~/.local/bin/to.bash
 ```

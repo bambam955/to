@@ -1,6 +1,6 @@
 ---
 number: 5
-status: approved
+status: completed
 author: Bennett Moore
 creation_date: 2026-02-17
 approved_by: Bennett Moore
@@ -100,34 +100,34 @@ This requires two pieces:
 
 ### GitHub Release Workflow
 
-- [ ] Create `.github/workflows/release.yml` triggered on `*.*.*` tags
-- [ ] Cross-compile `to-backend` for `linux/amd64` and `linux/arm64`
-- [ ] Package each build into a tarball: `to-<version>-linux-<arch>.tar.gz` containing `to-backend`, `to.bash`, `to.zsh`, `to.fish`
-- [ ] Generate SHA-256 checksums file (`checksums.txt`)
-- [ ] Upload tarballs and checksums to the GitHub Release
+- [x] Create `.github/workflows/release.yml` triggered on `*.*.*` tags
+- [x] Cross-compile `to-backend` for `linux/amd64` and `linux/arm64`
+- [x] Package each build into a tarball: `to-<version>-linux-<arch>.tar.gz` containing `to-backend`, `to.bash`, `to.zsh`, `to.fish`
+- [x] Generate SHA-256 checksums file (`checksums.txt`)
+- [x] Upload tarballs and checksums to the GitHub Release
 
 ### Installer Script
 
-- [ ] Create `install.sh` at the repo root (POSIX shell, `#!/bin/sh`)
-- [ ] Detect OS (Linux only initially; error on unsupported)
-- [ ] Detect architecture (`x86_64` → `amd64`, `aarch64`/`arm64` → `arm64`)
-- [ ] Determine target version:
+- [x] Create `install.sh` at the repo root (POSIX shell, `#!/bin/sh`)
+- [x] Detect OS (Linux only initially; error on unsupported)
+- [x] Detect architecture (`x86_64` → `amd64`, `aarch64`/`arm64` → `arm64`)
+- [x] Determine target version:
   - Use `TO_INSTALL_VERSION` if set
   - Otherwise fetch latest release version from GitHub API (`/repos/bambam955/to/releases/latest`)
-- [ ] Validate `TO_INSTALL_VERSION` if set:
+- [x] Validate `TO_INSTALL_VERSION` if set:
   - Value must match an exact tag present in GitHub releases (e.g. `1.2.3`)
   - Fail with a clear error when unresolved/invalid
-- [ ] Download the correct tarball and checksums file to a temp directory
-- [ ] Verify SHA-256 checksum before extracting
-- [ ] Resolve and validate install directory:
+- [x] Download the correct tarball and checksums file to a temp directory
+- [x] Verify SHA-256 checksum before extracting
+- [x] Resolve and validate install directory:
   - `TO_INSTALL_DIR` default is `$HOME/.local/bin`
   - Accept both relative and absolute values, resolved to an absolute path before use
   - Fail with a clear error for non-directory/uncreatable paths
-- [ ] Extract tarball and install `to-backend` + shell wrappers to resolved install directory
-- [ ] Print post-install instructions (which `source` line to add based on `$SHELL`)
+- [x] Extract tarball and install `to-backend` + shell wrappers to resolved install directory
+- [x] Print post-install instructions (which `source` line to add based on `$SHELL`)
 
 ### Documentation and Testing
 
-- [ ] Update README.md with curl install instructions
-- [ ] Add `TO_INSTALL_DIR` environment variable override for install location
-- [ ] Test installer script with shellcheck
+- [x] Update README.md with curl install instructions
+- [x] Add `TO_INSTALL_DIR` environment variable override for install location
+- [x] Test installer script with shellcheck
