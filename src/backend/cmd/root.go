@@ -13,11 +13,13 @@ import (
 // Operation-mode flags select which action to perform. At most one should
 // be true; when none is set the command defaults to navigation mode.
 var (
-	flagReg   bool
-	flagUnreg bool
-	flagList  bool
-	flagClean bool
-	flagExp   bool
+	flagReg       bool
+	flagUnreg     bool
+	flagList      bool
+	flagClean     bool
+	flagExp       bool
+	flagUninstall bool
+	flagPurge     bool
 )
 
 // rootExamples documents the common root-command workflows in a compact
@@ -28,7 +30,9 @@ const rootExamples = `
   $ to --list                        List registered aliases
   $ to --exp work                    Print the path for "work"
   $ to --unreg work                  Remove the "work" alias
-  $ to --clean                       Remove aliases for missing directories`
+  $ to --clean                       Remove aliases for missing directories
+  $ to --uninstall                   Remove the installed backend and wrappers
+  $ to --purge                       Remove install artifacts and config data`
 
 // rootCmd is the top-level cobra command. It uses flags (not subcommands)
 // so that the shell wrapper can expose a natural syntax:
@@ -87,12 +91,18 @@ func init() {
 	rootCmd.Flags().BoolVarP(&flagList, "list", "l", false, "List all registered aliases")
 	rootCmd.Flags().BoolVarP(&flagClean, "clean", "c", false, "Remove aliases pointing to directories that no longer exist")
 	rootCmd.Flags().BoolVarP(&flagExp, "exp", "e", false, "Show the full directory path for an alias: to --exp <alias>")
+	rootCmd.Flags().BoolVarP(&flagUninstall, "uninstall", "U", false, "Remove the installed backend and shell wrappers")
+	rootCmd.Flags().BoolVarP(&flagPurge, "purge", "P", false, "Remove install artifacts and default config data")
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 }
 
 // run dispatches to the appropriate handler based on which flag is set.
 // With no flags it defaults to navigation (alias lookup + cd protocol).
 func run(cmd *cobra.Command, args []string) error {
+	if err := validateOperationFlags(); err != nil {
+		return err
+	}
+
 	switch {
 	case flagReg:
 		return runReg(cmd, args)
@@ -104,9 +114,37 @@ func run(cmd *cobra.Command, args []string) error {
 		return runClean(cmd, args)
 	case flagExp:
 		return runExp(cmd, args)
+	case flagUninstall:
+		return runUninstall(cmd, args)
+	case flagPurge:
+		return runPurge(cmd, args)
 	default:
 		return runNavigate(cmd, args)
 	}
+}
+
+// validateOperationFlags rejects invocations that select more than one
+// operation mode. The root command uses flags for mutually exclusive actions,
+// so conflict detection has to happen before the first-match dispatch runs.
+func validateOperationFlags() error {
+	selected := 0
+	for _, enabled := range []bool{
+		flagReg,
+		flagUnreg,
+		flagList,
+		flagClean,
+		flagExp,
+		flagUninstall,
+		flagPurge,
+	} {
+		if enabled {
+			selected++
+		}
+	}
+	if selected > 1 {
+		return fmt.Errorf("usage: to accepts only one operation flag at a time")
+	}
+	return nil
 }
 
 // Execute runs the root command. On error it prints a user-facing message
