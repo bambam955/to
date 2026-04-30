@@ -37,17 +37,23 @@ func resetFlags(t *testing.T) {
 		rootCmd.SetArgs(nil)
 		rootCmd.SetOut(io.Discard)
 		rootCmd.SetErr(io.Discard)
+		rootCmd.SetIn(strings.NewReader(""))
+		flagUninstall = false
+		flagPurge = false
 	})
 	flagReg = false
 	flagUnreg = false
 	flagList = false
 	flagClean = false
 	flagExp = false
+	flagUninstall = false
+	flagPurge = false
 	configureVersion(rootCmd)
 	resetCobraFlags()
 	rootCmd.SetArgs(nil)
 	rootCmd.SetOut(io.Discard)
 	rootCmd.SetErr(io.Discard)
+	rootCmd.SetIn(strings.NewReader(""))
 }
 
 // setBuildVersion updates the shared build metadata for tests and restores the

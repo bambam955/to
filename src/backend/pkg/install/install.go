@@ -12,9 +12,20 @@ const (
 	BinaryName = "to-backend"
 	// WrapperName is the name of the bash wrapper script
 	WrapperName = "to.bash"
+	// ZshWrapperName is the name of the zsh wrapper script.
+	ZshWrapperName = "to.zsh"
+	// FishWrapperName is the name of the fish wrapper script.
+	FishWrapperName = "to.fish"
 	// TargetDir is the installation directory
 	TargetDir = ".local/bin"
 )
+
+// KnownWrapperNames returns the wrapper filenames managed by the installer.
+// The uninstall flow removes every known wrapper so switching shells does not
+// leave stale entrypoints behind.
+func KnownWrapperNames() []string {
+	return []string{WrapperName, ZshWrapperName, FishWrapperName}
+}
 
 // GetInstallPath returns the full installation path for a component.
 // It expands ~ to the user's home directory.
