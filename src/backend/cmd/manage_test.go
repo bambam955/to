@@ -53,7 +53,7 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 
 		output := stdout.String()
-		if !strings.Contains(output, "removed installed backend and shell wrappers") {
+		if !strings.Contains(output, "removed TO backend and shell wrappers") {
 			t.Fatalf("expected uninstall success message, got: %q", output)
 		}
 	})
@@ -74,7 +74,7 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 
 		output := stdout.String()
-		if !strings.Contains(output, "removed installed backend and shell wrappers") {
+		if !strings.Contains(output, "removed TO backend and shell wrappers") {
 			t.Fatalf("expected uninstall success message, got: %q", output)
 		}
 	})
@@ -131,8 +131,14 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 
 		output := stdout.String()
-		if !strings.Contains(output, "purged install artifacts and default config data") {
-			t.Fatalf("expected purge success message, got: %q", output)
+		if !strings.Contains(output, "removed TO backend and shell wrappers") {
+			t.Fatalf("expected uninstall message, got: %q", output)
+		}
+		if !strings.Contains(output, "purged TO database") {
+			t.Fatalf("expected purge message, got: %q", output)
+		}
+		if strings.Index(output, "removed TO backend and shell wrappers") > strings.Index(output, "purged TO database") {
+			t.Fatalf("expected uninstall message before purge message, got: %q", output)
 		}
 	})
 
@@ -152,8 +158,11 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 
 		output := stdout.String()
-		if !strings.Contains(output, "purged install artifacts and default config data") {
-			t.Fatalf("expected purge success message, got: %q", output)
+		if !strings.Contains(output, "removed TO backend and shell wrappers") {
+			t.Fatalf("expected uninstall message, got: %q", output)
+		}
+		if !strings.Contains(output, "purged TO database") {
+			t.Fatalf("expected purge message, got: %q", output)
 		}
 	})
 

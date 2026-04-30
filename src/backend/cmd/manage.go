@@ -12,8 +12,10 @@ import (
 )
 
 const (
-	uninstallUsage = "usage: to --uninstall"
-	purgeUsage     = "usage: to --purge"
+	uninstallUsage   = "usage: to --uninstall"
+	purgeUsage       = "usage: to --purge"
+	uninstallMessage = "removed TO backend and shell wrappers"
+	purgeMessage     = "purged TO database"
 )
 
 // runUninstall removes the installed backend binary and all known wrapper
@@ -30,7 +32,7 @@ func runUninstall(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	fmt.Fprintln(cmd.OutOrStdout(), formatter.Success("removed installed backend and shell wrappers"))
+	fmt.Fprintln(cmd.OutOrStdout(), formatter.Success(uninstallMessage))
 	return nil
 }
 
@@ -56,7 +58,10 @@ func runPurge(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to remove config directory %s: %w", configDir, err)
 	}
 
-	fmt.Fprintln(cmd.OutOrStdout(), formatter.Success("purged install artifacts and default config data"))
+	// Purge is uninstall plus database cleanup, so emit both success messages
+	// in order to make the sequence explicit to the user.
+	fmt.Fprintln(cmd.OutOrStdout(), formatter.Success(uninstallMessage))
+	fmt.Fprintln(cmd.OutOrStdout(), formatter.Success(purgeMessage))
 	return nil
 }
 
