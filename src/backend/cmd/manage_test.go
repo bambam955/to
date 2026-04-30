@@ -35,6 +35,7 @@ func TestInstallManagementCommands(t *testing.T) {
 
 		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
+		rootCmd.SetIn(strings.NewReader("y\n"))
 		rootCmd.SetArgs([]string{"--uninstall"})
 
 		err := rootCmd.Execute()
@@ -53,12 +54,15 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 
 		output := stdout.String()
+		if !strings.Contains(output, "Confirm TO uninstall (y/n):") {
+			t.Fatalf("expected uninstall confirmation prompt, got: %q", output)
+		}
 		if !strings.Contains(output, "removed TO backend and shell wrappers") {
 			t.Fatalf("expected uninstall success message, got: %q", output)
 		}
 	})
 
-	t.Run("uninstall is a no-op when artifacts are missing", func(t *testing.T) {
+	t.Run("uninstall cancels when declined", func(t *testing.T) {
 		resetFlags(t)
 
 		home := t.TempDir()
@@ -66,6 +70,7 @@ func TestInstallManagementCommands(t *testing.T) {
 
 		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
+		rootCmd.SetIn(strings.NewReader("n\n"))
 		rootCmd.SetArgs([]string{"-U"})
 
 		err := rootCmd.Execute()
@@ -74,8 +79,11 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 
 		output := stdout.String()
-		if !strings.Contains(output, "removed TO backend and shell wrappers") {
-			t.Fatalf("expected uninstall success message, got: %q", output)
+		if !strings.Contains(output, "Confirm TO uninstall (y/n):") {
+			t.Fatalf("expected uninstall confirmation prompt, got: %q", output)
+		}
+		if !strings.Contains(output, "cancelled") {
+			t.Fatalf("expected cancellation message, got: %q", output)
 		}
 	})
 
@@ -109,6 +117,7 @@ func TestInstallManagementCommands(t *testing.T) {
 
 		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
+		rootCmd.SetIn(strings.NewReader("y\n"))
 		rootCmd.SetArgs([]string{"--purge"})
 
 		err = rootCmd.Execute()
@@ -131,6 +140,9 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 
 		output := stdout.String()
+		if !strings.Contains(output, "Confirm TO purge (y/n):") {
+			t.Fatalf("expected purge confirmation prompt, got: %q", output)
+		}
 		if !strings.Contains(output, "removed TO backend and shell wrappers") {
 			t.Fatalf("expected uninstall message, got: %q", output)
 		}
@@ -142,7 +154,7 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 	})
 
-	t.Run("purge is a no-op when config data is missing", func(t *testing.T) {
+	t.Run("purge cancels when declined", func(t *testing.T) {
 		resetFlags(t)
 
 		home := t.TempDir()
@@ -150,6 +162,7 @@ func TestInstallManagementCommands(t *testing.T) {
 
 		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
+		rootCmd.SetIn(strings.NewReader("n\n"))
 		rootCmd.SetArgs([]string{"-P"})
 
 		err := rootCmd.Execute()
@@ -158,11 +171,11 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 
 		output := stdout.String()
-		if !strings.Contains(output, "removed TO backend and shell wrappers") {
-			t.Fatalf("expected uninstall message, got: %q", output)
+		if !strings.Contains(output, "Confirm TO purge (y/n):") {
+			t.Fatalf("expected purge confirmation prompt, got: %q", output)
 		}
-		if !strings.Contains(output, "purged TO database") {
-			t.Fatalf("expected purge message, got: %q", output)
+		if !strings.Contains(output, "cancelled") {
+			t.Fatalf("expected cancellation message, got: %q", output)
 		}
 	})
 

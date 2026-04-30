@@ -37,6 +37,7 @@ func resetFlags(t *testing.T) {
 		rootCmd.SetArgs(nil)
 		rootCmd.SetOut(io.Discard)
 		rootCmd.SetErr(io.Discard)
+		rootCmd.SetIn(strings.NewReader(""))
 		flagUninstall = false
 		flagPurge = false
 	})
@@ -52,6 +53,7 @@ func resetFlags(t *testing.T) {
 	rootCmd.SetArgs(nil)
 	rootCmd.SetOut(io.Discard)
 	rootCmd.SetErr(io.Discard)
+	rootCmd.SetIn(strings.NewReader(""))
 }
 
 // setBuildVersion updates the shared build metadata for tests and restores the
