@@ -6,12 +6,17 @@ default:
 
 # --------------- USER COMMANDS --------------- #
 
-# Install the backend and wrapper to the local bin dir
+# Install the backend and all shell wrappers to the local bin dir
 install shell="bash": build
     @mkdir -p "${TO_INSTALL_DIR:-$HOME/.local/bin}"
     cp bin/to-backend "${TO_INSTALL_DIR:-$HOME/.local/bin}/to-backend"
-    cp src/wrappers/to.{{ shell }} "${TO_INSTALL_DIR:-$HOME/.local/bin}/"
+    cp src/wrappers/to.bash "${TO_INSTALL_DIR:-$HOME/.local/bin}/"
+    cp src/wrappers/to.zsh "${TO_INSTALL_DIR:-$HOME/.local/bin}/"
+    cp src/wrappers/to.fish "${TO_INSTALL_DIR:-$HOME/.local/bin}/"
     @chmod +x "${TO_INSTALL_DIR:-$HOME/.local/bin}/to-backend"
+    @chmod +x "${TO_INSTALL_DIR:-$HOME/.local/bin}/to.bash"
+    @chmod +x "${TO_INSTALL_DIR:-$HOME/.local/bin}/to.zsh"
+    @chmod +x "${TO_INSTALL_DIR:-$HOME/.local/bin}/to.fish"
     @echo "Add the following to your shell configuration:"
     @# Resolve relative install dirs before printing the shell rc snippet.
     @echo "  source $(cd "${TO_INSTALL_DIR:-$HOME/.local/bin}" && pwd)/to.{{ shell }}"
@@ -20,16 +25,15 @@ install shell="bash": build
 build:
     cd src/backend && go build -ldflags "-X main.buildVersion=${TO_VERSION:-dev}" -o ../../bin/to-backend ./cmd
 
-# Uninstall both components
-uninstall shell="bash":
+# Rebuild and reinstall all components
+upgrade shell="bash": (install shell)
+
+# Remove installed files and all configuration/data
+purge:
     rm -f "${TO_INSTALL_DIR:-$HOME/.local/bin}/to-backend"
-    rm -f "${TO_INSTALL_DIR:-$HOME/.local/bin}/to.{{ shell }}"
-
-# Rebuild and reinstall both components
-upgrade shell="bash": (uninstall shell) (install shell)
-
-# Uninstall and remove all configuration and data
-purge shell="bash": (uninstall shell)
+    rm -f "${TO_INSTALL_DIR:-$HOME/.local/bin}/to.bash"
+    rm -f "${TO_INSTALL_DIR:-$HOME/.local/bin}/to.zsh"
+    rm -f "${TO_INSTALL_DIR:-$HOME/.local/bin}/to.fish"
     @echo "Warning: removing all configuration and data from ~/.config/to/"
     rm -rf ~/.config/to/
 

@@ -45,7 +45,7 @@ cd to
 just install
 ```
 
-This builds the `to-backend` binary and copies it along with the selected shell wrapper to `~/.local/bin/` by default. Set `TO_INSTALL_DIR` to override the target directory for `just install` and `just uninstall`.
+This builds the `to-backend` binary and copies it along with all shell wrappers to `~/.local/bin/` by default. Set `TO_INSTALL_DIR` to override the target directory for `just install` and the `to -U` / `to -P` removal flow.
 
 ### Make it persistent
 
@@ -67,6 +67,8 @@ source ~/.local/bin/to.fish
 | List all | `to --list` | `to -l` |
 | Clean stale | `to --clean` | `to -c` |
 | Expand path | `to --exp <alias>` | `to -e <alias>` |
+| Uninstall | `to --uninstall` | `to -U` |
+| Purge | `to --purge` | `to -P` |
 | Version | `to --version` | `to -v` |
 
 ### Examples
@@ -159,14 +161,14 @@ just upgrade    # Rebuild and reinstall
 
 Release workflow details live in [docs/release-workflow.md](docs/release-workflow.md).
 
-## Uninstalling
+## Removing
 
 ```bash
-just uninstall  # Remove binary and shell wrapper
-just purge      # Also remove ~/.config/to/ data
+to -U  # Remove binary and shell wrappers
+to -P  # Also remove ~/.config/to/ data
 ```
 
-`just uninstall` also respects `TO_INSTALL_DIR` when you installed outside `~/.local/bin`.
+`TO_INSTALL_DIR` also applies when removing a custom install location with `to -U` or `to -P`.
 
 Remember to remove the `source ~/.local/bin/to.<shell>` line from your shell config.
 

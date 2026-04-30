@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	uninstallUsage   = "usage: to --uninstall"
-	purgeUsage       = "usage: to --purge"
+	uninstallUsage   = "usage: to -U, --uninstall"
+	purgeUsage       = "usage: to -P, --purge"
 	uninstallMessage = "removed TO backend and shell wrappers"
 	purgeMessage     = "purged TO database"
 )
@@ -102,7 +102,7 @@ func runPurge(cmd *cobra.Command, args []string) error {
 }
 
 // removeInstallArtifacts deletes the backend binary and all known wrapper
-// files from the user's local bin directory. It ignores missing files so the
+// files from the resolved install directory. It ignores missing files so the
 // uninstall flow stays idempotent.
 func removeInstallArtifacts() error {
 	components := append([]string{install.BinaryName}, install.KnownWrapperNames()...)

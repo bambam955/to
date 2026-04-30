@@ -13,7 +13,7 @@ function to
     # Apply navigation on successful backend runs with a NAV control frame.
     if test "$exit_code" -eq 0; and string match -rq '^NAV (.+)$' -- "$control_output"
         set -l target_dir (string match -r '^NAV (.+)$' -- "$control_output")[2]
-        cd $target_dir; or return 1
+        cd "$target_dir"; or return 1
         return 0
     end
 

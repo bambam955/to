@@ -20,6 +20,26 @@ const (
 	TargetDir = ".local/bin"
 )
 
+// ResolveInstallDir returns the directory used for installed binaries and
+// wrappers. It honors TO_INSTALL_DIR when present so the backend matches the
+// source installer and justfile recipes.
+func ResolveInstallDir() (string, error) {
+	if override := os.Getenv("TO_INSTALL_DIR"); override != "" {
+		installDir, err := filepath.Abs(override)
+		if err != nil {
+			return "", fmt.Errorf("cannot resolve install directory %s: %w", override, err)
+		}
+		return installDir, nil
+	}
+
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", fmt.Errorf("cannot determine home directory: %w", err)
+	}
+
+	return filepath.Join(home, TargetDir), nil
+}
+
 // KnownWrapperNames returns the wrapper filenames managed by the installer.
 // The uninstall flow removes every known wrapper so switching shells does not
 // leave stale entrypoints behind.
@@ -28,28 +48,25 @@ func KnownWrapperNames() []string {
 }
 
 // GetInstallPath returns the full installation path for a component.
-// It expands ~ to the user's home directory.
+// It expands ~ to the user's home directory and respects TO_INSTALL_DIR.
 func GetInstallPath(component string) (string, error) {
-	home, err := os.UserHomeDir()
+	installDir, err := ResolveInstallDir()
 	if err != nil {
-		return "", fmt.Errorf("cannot determine home directory: %w", err)
+		return "", err
 	}
 
-	path := filepath.Join(home, TargetDir, component)
-	return path, nil
+	return filepath.Join(installDir, component), nil
 }
 
 // EnsureInstallDir creates the installation directory if it doesn't exist.
 // It uses 0755 permissions, which is standard for user-local bin directories.
 func EnsureInstallDir() error {
-	home, err := os.UserHomeDir()
+	installDir, err := ResolveInstallDir()
 	if err != nil {
-		return fmt.Errorf("cannot determine home directory: %w", err)
+		return err
 	}
 
-	installDir := filepath.Join(home, TargetDir)
-	err = os.MkdirAll(installDir, 0o755)
-	if err != nil {
+	if err := os.MkdirAll(installDir, 0o755); err != nil {
 		return fmt.Errorf("cannot create install directory %s: %w", installDir, err)
 	}
 
@@ -59,7 +76,7 @@ func EnsureInstallDir() error {
 // VerifyPath checks if the installation directory is in the user's PATH.
 // This is primarily informational - the user can fix PATH issues manually.
 func VerifyPath() (bool, error) {
-	installPath, err := GetInstallPath("")
+	installPath, err := ResolveInstallDir()
 	if err != nil {
 		return false, err
 	}

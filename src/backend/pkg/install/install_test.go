@@ -40,6 +40,21 @@ func TestGetInstallPath(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("install dir override", func(t *testing.T) {
+		overrideDir := filepath.Join(t.TempDir(), "custom install")
+		t.Setenv("TO_INSTALL_DIR", overrideDir)
+
+		result, err := GetInstallPath(BinaryName)
+		if err != nil {
+			t.Fatalf("GetInstallPath(%q) returned error: %v", BinaryName, err)
+		}
+
+		expected := filepath.Join(overrideDir, BinaryName)
+		if result != expected {
+			t.Errorf("GetInstallPath(%q) = %q, want %q", BinaryName, result, expected)
+		}
+	})
 }
 
 func TestEnsureInstallDir(t *testing.T) {
@@ -69,6 +84,23 @@ func TestEnsureInstallDir(t *testing.T) {
 	if err != nil {
 		t.Errorf("Second call to EnsureInstallDir() returned error: %v", err)
 	}
+
+	t.Run("respects TO_INSTALL_DIR override", func(t *testing.T) {
+		overrideDir := filepath.Join(t.TempDir(), "custom install")
+		t.Setenv("TO_INSTALL_DIR", overrideDir)
+
+		if err := EnsureInstallDir(); err != nil {
+			t.Fatalf("EnsureInstallDir() returned error: %v", err)
+		}
+
+		info, err := os.Stat(overrideDir)
+		if err != nil {
+			t.Fatalf("Override directory was not created: %v", err)
+		}
+		if !info.IsDir() {
+			t.Errorf("Path exists but is not a directory")
+		}
+	})
 }
 
 func TestVerifyPath(t *testing.T) {
@@ -102,4 +134,19 @@ func TestVerifyPath(t *testing.T) {
 	if inPath {
 		t.Errorf("VerifyPath() = %v, want %v", inPath, false)
 	}
+
+	t.Run("with TO_INSTALL_DIR override", func(t *testing.T) {
+		overrideDir := filepath.Join(t.TempDir(), "custom install")
+		t.Setenv("TO_INSTALL_DIR", overrideDir)
+
+		origPath := os.Getenv("PATH")
+		t.Setenv("PATH", origPath+string(os.PathListSeparator)+overrideDir)
+		inPath, err := VerifyPath()
+		if err != nil {
+			t.Fatalf("VerifyPath() returned error: %v", err)
+		}
+		if !inPath {
+			t.Errorf("VerifyPath() = %v, want %v", inPath, true)
+		}
+	})
 }
