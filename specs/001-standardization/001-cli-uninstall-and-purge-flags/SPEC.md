@@ -1,6 +1,6 @@
 ---
 number: 1
-status: in-progress
+status: completed
 author: Bennett Moore
 creation_date: 2026-04-07
 approved_by: Bennett Moore
