@@ -11,6 +11,30 @@ import (
 	"to/pkg/install"
 )
 
+func writeInstallConfig(t *testing.T, home, installDir string) {
+	t.Helper()
+
+	t.Setenv("HOME", home)
+	if err := config.Save(config.Config{InstallDir: installDir}); err != nil {
+		t.Fatalf("failed to write install config: %v", err)
+	}
+}
+
+func chdir(t *testing.T, dir string) {
+	t.Helper()
+
+	original, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("failed to get working dir: %v", err)
+	}
+	if err := os.Chdir(dir); err != nil {
+		t.Fatalf("failed to change working dir: %v", err)
+	}
+	t.Cleanup(func() {
+		_ = os.Chdir(original)
+	})
+}
+
 func TestInstallManagementCommands(t *testing.T) {
 	t.Run("uninstall removes backend and all wrappers", func(t *testing.T) {
 		resetFlags(t)
@@ -87,21 +111,27 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 	})
 
-	t.Run("uninstall respects TO_INSTALL_DIR", func(t *testing.T) {
+	t.Run("uninstall respects install config", func(t *testing.T) {
 		resetFlags(t)
 
-		installDir := t.TempDir()
-		t.Setenv("TO_INSTALL_DIR", installDir)
+		home := t.TempDir()
+		t.Setenv("HOME", home)
+
+		installDir := filepath.Join(home, "nested", "bin")
+		if err := os.MkdirAll(installDir, 0o755); err != nil {
+			t.Fatalf("failed to create install dir: %v", err)
+		}
+		writeInstallConfig(t, home, installDir)
+		t.Setenv("TO_INSTALL_DIR", filepath.Join(t.TempDir(), "wrong"))
 
 		for _, component := range append([]string{install.BinaryName}, install.KnownWrapperNames()...) {
-			path, err := install.GetInstallPath(component)
-			if err != nil {
-				t.Fatalf("failed to resolve install path for %s: %v", component, err)
-			}
+			path := filepath.Join(installDir, component)
 			if err := os.WriteFile(path, []byte(component), 0o644); err != nil {
 				t.Fatalf("failed to create install artifact %s: %v", path, err)
 			}
 		}
+
+		chdir(t, t.TempDir())
 
 		var stdout bytes.Buffer
 		rootCmd.SetOut(&stdout)
@@ -114,10 +144,7 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 
 		for _, component := range append([]string{install.BinaryName}, install.KnownWrapperNames()...) {
-			path, err := install.GetInstallPath(component)
-			if err != nil {
-				t.Fatalf("failed to resolve install path for %s: %v", component, err)
-			}
+			path := filepath.Join(installDir, component)
 			if _, err := os.Stat(path); !os.IsNotExist(err) {
 				t.Fatalf("expected %s to be removed, stat err=%v", path, err)
 			}
@@ -191,24 +218,27 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 	})
 
-	t.Run("purge respects TO_INSTALL_DIR", func(t *testing.T) {
+	t.Run("purge respects install config", func(t *testing.T) {
 		resetFlags(t)
 
-		installDir := t.TempDir()
-		t.Setenv("TO_INSTALL_DIR", installDir)
+		home := t.TempDir()
+		t.Setenv("HOME", home)
+
+		installDir := filepath.Join(home, "nested", "bin")
+		if err := os.MkdirAll(installDir, 0o755); err != nil {
+			t.Fatalf("failed to create install dir: %v", err)
+		}
+		writeInstallConfig(t, home, installDir)
+		t.Setenv("TO_INSTALL_DIR", filepath.Join(t.TempDir(), "wrong"))
 
 		for _, component := range append([]string{install.BinaryName}, install.KnownWrapperNames()...) {
-			path, err := install.GetInstallPath(component)
-			if err != nil {
-				t.Fatalf("failed to resolve install path for %s: %v", component, err)
-			}
+			path := filepath.Join(installDir, component)
 			if err := os.WriteFile(path, []byte(component), 0o644); err != nil {
 				t.Fatalf("failed to create install artifact %s: %v", path, err)
 			}
 		}
 
-		home := t.TempDir()
-		t.Setenv("HOME", home)
+		chdir(t, t.TempDir())
 
 		configDir, err := config.GetConfigDir()
 		if err != nil {
@@ -229,10 +259,7 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 
 		for _, component := range append([]string{install.BinaryName}, install.KnownWrapperNames()...) {
-			path, err := install.GetInstallPath(component)
-			if err != nil {
-				t.Fatalf("failed to resolve install path for %s: %v", component, err)
-			}
+			path := filepath.Join(installDir, component)
 			if _, err := os.Stat(path); !os.IsNotExist(err) {
 				t.Fatalf("expected %s to be removed, stat err=%v", path, err)
 			}

@@ -45,7 +45,7 @@ cd to
 just install
 ```
 
-This builds the `to-backend` binary and copies it along with all shell wrappers to `~/.local/bin/` by default. Set `TO_INSTALL_DIR` to override the target directory for `just install` and the `to -U` / `to -P` removal flow.
+This builds the `to-backend` binary and copies it along with all shell wrappers to `~/.local/bin/` by default. Set `TO_INSTALL_DIR` to override the target directory for `just install`; the resolved install path is recorded in `~/.config/to/config.toml` so `to -U` / `to -P` remove the same location later.
 
 ### Make it persistent
 
@@ -159,7 +159,7 @@ just dev        # Full cycle: clean → fmt → lint → test → build
 just upgrade    # Rebuild and reinstall
 ```
 
-Release workflow details live in [docs/release-workflow.md](docs/release-workflow.md).
+Release workflow details live in [.github/workflows/release-workflow.md](.github/workflows/release-workflow.md).
 
 ## Removing
 
@@ -168,7 +168,7 @@ to -U  # Remove binary and shell wrappers
 to -P  # Also remove ~/.config/to/ data
 ```
 
-`TO_INSTALL_DIR` also applies when removing a custom install location with `to -U` or `to -P`.
+The installer records the resolved install path in `~/.config/to/config.toml` so `to -U` and `to -P` remove the same location later, even if `TO_INSTALL_DIR` was relative during install.
 
 Remember to remove the `source ~/.local/bin/to.<shell>` line from your shell config.
 

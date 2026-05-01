@@ -9,6 +9,7 @@ default:
 # Install the backend and all shell wrappers to the local bin dir
 install shell="bash": build
     @mkdir -p "${TO_INSTALL_DIR:-$HOME/.local/bin}"
+    @mkdir -p "$HOME/.config/to"
     cp bin/to-backend "${TO_INSTALL_DIR:-$HOME/.local/bin}/to-backend"
     cp src/wrappers/to.bash "${TO_INSTALL_DIR:-$HOME/.local/bin}/"
     cp src/wrappers/to.zsh "${TO_INSTALL_DIR:-$HOME/.local/bin}/"
@@ -17,9 +18,11 @@ install shell="bash": build
     @chmod +x "${TO_INSTALL_DIR:-$HOME/.local/bin}/to.bash"
     @chmod +x "${TO_INSTALL_DIR:-$HOME/.local/bin}/to.zsh"
     @chmod +x "${TO_INSTALL_DIR:-$HOME/.local/bin}/to.fish"
+    @# Record the canonical install dir in the same TOML shape as pkg/config.Config.
+    @install_dir="$(cd "${TO_INSTALL_DIR:-$HOME/.local/bin}" && pwd -P)"; install_dir_toml="$(printf '%s' "${install_dir}" | sed 's/\\/\\\\/g; s/"/\\"/g')"; printf 'install_dir = "%s"\n' "${install_dir_toml}" > "$HOME/.config/to/config.toml"
     @echo "Add the following to your shell configuration:"
     @# Resolve relative install dirs before printing the shell rc snippet.
-    @echo "  source $(cd "${TO_INSTALL_DIR:-$HOME/.local/bin}" && pwd)/to.{{ shell }}"
+    @echo "  source $(cd "${TO_INSTALL_DIR:-$HOME/.local/bin}" && pwd -P)/to.{{ shell }}"
 
 # Build the Go backend binary
 build:
