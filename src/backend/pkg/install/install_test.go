@@ -8,6 +8,8 @@ import (
 	"to/pkg/config"
 )
 
+// writeRawInstallConfig writes a test fixture directly so we can exercise
+// fallback behavior against malformed config.toml contents.
 func writeRawInstallConfig(t *testing.T, home, contents string) {
 	t.Helper()
 

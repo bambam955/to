@@ -11,6 +11,8 @@ import (
 	"to/pkg/install"
 )
 
+// writeInstallConfig persists a canonical install path for uninstall and
+// purge tests that need recorded metadata.
 func writeInstallConfig(t *testing.T, home, installDir string) {
 	t.Helper()
 
@@ -20,6 +22,8 @@ func writeInstallConfig(t *testing.T, home, installDir string) {
 	}
 }
 
+// chdir swaps the working directory for a test and restores the original
+// directory when the test ends.
 func chdir(t *testing.T, dir string) {
 	t.Helper()
 

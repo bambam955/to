@@ -149,10 +149,15 @@ resolve_install_dir() {
     fi
 }
 
+# escape_toml_basic_string emits a value that is safe to embed in a TOML basic
+# string without changing the install directory contents.
 escape_toml_basic_string() {
     printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
 }
 
+# write_install_config records the canonical install directory after all
+# installation steps have succeeded so partial installs do not leave stale
+# cleanup metadata behind.
 write_install_config() {
     install_dir="$1"
     if [ -z "${HOME:-}" ]; then
