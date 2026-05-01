@@ -39,7 +39,7 @@ echo "Test 1: navigation changes PWD"
 set start_dir $PWD
 to tmp
 assert "PWD changed to /tmp" "/tmp" "$PWD"
-cd $start_dir; or exit 1
+cd "$start_dir"; or exit 1
 
 # Test 2: Non-navigation output is passed through
 echo "Test 2: list output passthrough"
@@ -62,6 +62,28 @@ set start_dir $PWD
 set output (to --exp tmp)
 assert "exp output is /tmp" "/tmp" "$output"
 assert "PWD unchanged" "$start_dir" "$PWD"
+
+# Test 5: Navigation handles spaces in target paths
+echo "Test 5: navigation handles spaced paths"
+set -l space_root (mktemp -d)
+set -l space_dir "$space_root/my projects"
+mkdir -p "$space_dir"
+
+if not to --reg spaced "$space_dir" >/dev/null
+    echo "  FAIL: register spaced alias"
+    set fail (math $fail + 1)
+else
+    set start_dir $PWD
+    if to spaced
+        assert "PWD changed to spaced dir" "$space_dir" "$PWD"
+        cd "$start_dir"; or exit 1
+    else
+        echo "  FAIL: navigation with spaced path"
+        set fail (math $fail + 1)
+    end
+end
+
+rm -rf "$space_root"
 
 # Cleanup
 rm -f "$TO_DB"

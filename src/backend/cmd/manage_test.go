@@ -11,6 +11,34 @@ import (
 	"to/pkg/install"
 )
 
+// writeInstallConfig persists a canonical install path for uninstall and
+// purge tests that need recorded metadata.
+func writeInstallConfig(t *testing.T, home, installDir string) {
+	t.Helper()
+
+	t.Setenv("HOME", home)
+	if err := config.Save(config.Config{InstallDir: installDir}); err != nil {
+		t.Fatalf("failed to write install config: %v", err)
+	}
+}
+
+// chdir swaps the working directory for a test and restores the original
+// directory when the test ends.
+func chdir(t *testing.T, dir string) {
+	t.Helper()
+
+	original, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("failed to get working dir: %v", err)
+	}
+	if err := os.Chdir(dir); err != nil {
+		t.Fatalf("failed to change working dir: %v", err)
+	}
+	t.Cleanup(func() {
+		_ = os.Chdir(original)
+	})
+}
+
 func TestInstallManagementCommands(t *testing.T) {
 	t.Run("uninstall removes backend and all wrappers", func(t *testing.T) {
 		resetFlags(t)
@@ -87,6 +115,46 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 	})
 
+	t.Run("uninstall respects install config", func(t *testing.T) {
+		resetFlags(t)
+
+		home := t.TempDir()
+		t.Setenv("HOME", home)
+
+		installDir := filepath.Join(home, "nested", "bin")
+		if err := os.MkdirAll(installDir, 0o755); err != nil {
+			t.Fatalf("failed to create install dir: %v", err)
+		}
+		writeInstallConfig(t, home, installDir)
+		t.Setenv("TO_INSTALL_DIR", filepath.Join(t.TempDir(), "wrong"))
+
+		for _, component := range append([]string{install.BinaryName}, install.KnownWrapperNames()...) {
+			path := filepath.Join(installDir, component)
+			if err := os.WriteFile(path, []byte(component), 0o644); err != nil {
+				t.Fatalf("failed to create install artifact %s: %v", path, err)
+			}
+		}
+
+		chdir(t, t.TempDir())
+
+		var stdout bytes.Buffer
+		rootCmd.SetOut(&stdout)
+		rootCmd.SetIn(strings.NewReader("y\n"))
+		rootCmd.SetArgs([]string{"-U"})
+
+		err := rootCmd.Execute()
+		if err != nil {
+			t.Fatalf("expected no error, got: %v", err)
+		}
+
+		for _, component := range append([]string{install.BinaryName}, install.KnownWrapperNames()...) {
+			path := filepath.Join(installDir, component)
+			if _, err := os.Stat(path); !os.IsNotExist(err) {
+				t.Fatalf("expected %s to be removed, stat err=%v", path, err)
+			}
+		}
+	})
+
 	t.Run("purge removes config data and install artifacts", func(t *testing.T) {
 		resetFlags(t)
 
@@ -151,6 +219,58 @@ func TestInstallManagementCommands(t *testing.T) {
 		}
 		if strings.Index(output, "removed TO backend and shell wrappers") > strings.Index(output, "purged TO database") {
 			t.Fatalf("expected uninstall message before purge message, got: %q", output)
+		}
+	})
+
+	t.Run("purge respects install config", func(t *testing.T) {
+		resetFlags(t)
+
+		home := t.TempDir()
+		t.Setenv("HOME", home)
+
+		installDir := filepath.Join(home, "nested", "bin")
+		if err := os.MkdirAll(installDir, 0o755); err != nil {
+			t.Fatalf("failed to create install dir: %v", err)
+		}
+		writeInstallConfig(t, home, installDir)
+		t.Setenv("TO_INSTALL_DIR", filepath.Join(t.TempDir(), "wrong"))
+
+		for _, component := range append([]string{install.BinaryName}, install.KnownWrapperNames()...) {
+			path := filepath.Join(installDir, component)
+			if err := os.WriteFile(path, []byte(component), 0o644); err != nil {
+				t.Fatalf("failed to create install artifact %s: %v", path, err)
+			}
+		}
+
+		chdir(t, t.TempDir())
+
+		configDir, err := config.GetConfigDir()
+		if err != nil {
+			t.Fatalf("failed to create config dir: %v", err)
+		}
+		if err := os.WriteFile(filepath.Join(configDir, "database.json"), []byte("{}"), 0o644); err != nil {
+			t.Fatalf("failed to create config file: %v", err)
+		}
+
+		var stdout bytes.Buffer
+		rootCmd.SetOut(&stdout)
+		rootCmd.SetIn(strings.NewReader("y\n"))
+		rootCmd.SetArgs([]string{"-P"})
+
+		err = rootCmd.Execute()
+		if err != nil {
+			t.Fatalf("expected no error, got: %v", err)
+		}
+
+		for _, component := range append([]string{install.BinaryName}, install.KnownWrapperNames()...) {
+			path := filepath.Join(installDir, component)
+			if _, err := os.Stat(path); !os.IsNotExist(err) {
+				t.Fatalf("expected %s to be removed, stat err=%v", path, err)
+			}
+		}
+
+		if _, err := os.Stat(configDir); !os.IsNotExist(err) {
+			t.Fatalf("expected config directory to be removed, stat err=%v", err)
 		}
 	})
 

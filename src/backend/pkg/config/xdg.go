@@ -12,6 +12,8 @@ import (
 const (
 	// DatabaseName is the filename of the database
 	DatabaseName = "database.json"
+	// ConfigFileName stores the installer metadata used by uninstall flows.
+	ConfigFileName = "config.toml"
 	// ConfigDir is the XDG config directory name
 	ConfigDir = "to"
 	// DefaultDatabaseVersion is the initial schema version

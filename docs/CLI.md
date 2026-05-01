@@ -14,6 +14,9 @@ just install
 source ~/.local/bin/to.bash
 ```
 
+Both install paths copy `to-backend` plus all three wrappers: `to.bash`, `to.zsh`, and `to.fish`.
+Set `TO_INSTALL_DIR` to override the install location for `just install`; the resolved install path is recorded in `~/.config/to/config.toml` so `to -U` / `to -P` remove the same location later.
+
 ## Commands
 
 ### Navigate to an alias
@@ -69,6 +72,24 @@ to -e <alias>
 
 Output the absolute path for an alias (useful for scripts). Outputs only the path with no extra formatting.
 
+### Uninstall the tool
+
+```bash
+to --uninstall
+to -U
+```
+
+Remove the backend and all installed wrappers. Prompts for confirmation before deleting files.
+
+### Purge install data
+
+```bash
+to --purge
+to -P
+```
+
+Remove the backend, all installed wrappers, and the default configuration directory at `~/.config/to/` along with `config.toml`.
+
 ### Inspect the installed version
 
 ```bash
@@ -94,5 +115,5 @@ just build                    # Build a local development binary
 just test       # Run tests
 just clean      # Clean build artifacts
 just dev        # Full dev build (test + build)
-just help       # Show all commands
+just            # Show all commands
 ```

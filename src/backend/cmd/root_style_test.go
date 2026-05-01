@@ -81,8 +81,8 @@ func TestHelpExamples(t *testing.T) {
 		{command: "to --exp work", description: `Print the path for "work"`},
 		{command: "to --unreg work", description: `Remove the "work" alias`},
 		{command: "to --clean", description: "Remove aliases for missing directories"},
-		{command: "to --uninstall", description: "Remove the installed backend and wrappers"},
-		{command: "to --purge", description: "Remove install artifacts and config data"},
+		{command: "to -U", description: "Remove the installed backend and wrappers"},
+		{command: "to -P", description: "Remove install artifacts and config data"},
 	}
 	for _, example := range expectedExamples {
 		linePrefix := "  $ " + example.command

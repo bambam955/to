@@ -149,6 +149,36 @@ resolve_install_dir() {
     fi
 }
 
+# escape_toml_basic_string emits a value that is safe to embed in a TOML basic
+# string without changing the install directory contents.
+escape_toml_basic_string() {
+    printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'
+}
+
+# write_install_config records the canonical install directory after all
+# installation steps have succeeded so partial installs do not leave stale
+# cleanup metadata behind.
+write_install_config() {
+    install_dir="$1"
+    if [ -z "${HOME:-}" ]; then
+        return 0
+    fi
+
+    config_dir="${HOME}/.config/to"
+    config_path="${config_dir}/config.toml"
+
+    if ! mkdir -p "${config_dir}"; then
+        fail "failed to create config directory: ${config_dir}"
+    fi
+
+    # Keep this field name and TOML shape aligned with pkg/config.Config.
+    escaped_install_dir="$(escape_toml_basic_string "${install_dir}")"
+
+    if ! printf 'install_dir = "%s"\n' "${escaped_install_dir}" >"${config_path}"; then
+        fail "failed to write install config: ${config_path}"
+    fi
+}
+
 compute_sha256() {
     file_path="$1"
 
@@ -276,6 +306,8 @@ chmod 0755 \
     "${install_dir}/to.bash" \
     "${install_dir}/to.zsh" \
     "${install_dir}/to.fish"
+
+write_install_config "${install_dir}"
 
 log ""
 log "Installed to ${install_dir}"

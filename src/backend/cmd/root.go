@@ -31,8 +31,8 @@ const rootExamples = `
   $ to --exp work                    Print the path for "work"
   $ to --unreg work                  Remove the "work" alias
   $ to --clean                       Remove aliases for missing directories
-  $ to --uninstall                   Remove the installed backend and wrappers
-  $ to --purge                       Remove install artifacts and config data`
+  $ to -U                            Remove the installed backend and wrappers
+  $ to -P                            Remove install artifacts and config data`
 
 // rootCmd is the top-level cobra command. It uses flags (not subcommands)
 // so that the shell wrapper can expose a natural syntax:
