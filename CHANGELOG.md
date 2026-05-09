@@ -4,6 +4,18 @@ All notable changes to `to` are documented in this file.
 
 This changelog is generated from Conventional Commit history with `git-cliff`.
 
+## [0.3.0](https://github.com/bambam955/to/compare/0.2.0...0.3.0) - 2026-05-09
+
+### Features
+
+- Add root help examples ([#19](https://github.com/bambam955/to/pull/19))
+- Add uninstall and purge flags ([#20](https://github.com/bambam955/to/pull/20))
+
+### Maintenance
+
+- Update Specture skills
+- Standardize CLI install and removal flow ([#21](https://github.com/bambam955/to/pull/21))
+
 ## [0.2.0](https://github.com/bambam955/to/compare/0.1.0...0.2.0) - 2026-04-14
 
 ### Features
